@@ -1,0 +1,428 @@
+/* ==========================================================================
+   校园运动场馆信息系统 · 公共样式
+   引入位置：Bootstrap CSS 之后（只做主题增强，不整体覆盖 Bootstrap）
+   所有页面共用本文件。
+   ========================================================================== */
+
+:root {
+  --brand: #0e7c86;
+  --brand-dark: #0a5660;
+  --brand-light: #e3f2f3;
+  --accent: #f97316;
+  --ok: #16a34a;
+  --warn: #f59e0b;
+  --busy: #dc2626;
+  --ink: #1f2937;
+  --bg-soft: #f3f7f8;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: var(--bg-soft);
+  overflow-x: hidden; /* 自查：375 / 768 / 1200 三档宽度下无横向滚动条 */
+}
+
+/* --------------------------------------------------------------------------
+   断网 / CDN 失败提示条
+   -------------------------------------------------------------------------- */
+.alert-ribbon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  margin: 0;
+  border-radius: 0;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   统一导航（四个页面共用）
+   -------------------------------------------------------------------------- */
+.brand-nav {
+  background: linear-gradient(90deg, var(--brand-dark), var(--brand));
+  box-shadow: 0 2px 12px rgba(10, 86, 96, .25);
+}
+
+.brand-nav .nav-link {
+  color: rgba(255, 255, 255, .85);
+  font-weight: 500;
+  margin: 0 .2rem;
+  padding-left: .8rem !important;
+  padding-right: .8rem !important;
+  border-radius: .5rem;
+}
+
+.brand-nav .nav-link:hover,
+.brand-nav .nav-link.active {
+  color: #fff;
+  background: rgba(255, 255, 255, .18);
+}
+
+/* --------------------------------------------------------------------------
+   Hero 与汇总条
+   -------------------------------------------------------------------------- */
+.hero {
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 55%, #14b8a6 100%);
+  padding: 3.75rem 0;
+}
+
+.hero h1 {
+  font-weight: 700;
+}
+
+.hero .lead {
+  color: rgba(255, 255, 255, .92);
+}
+
+.campus-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.25rem;
+  margin-top: 1.6rem;
+  padding: 1.2rem 1.5rem;
+  background: rgba(255, 255, 255, .14);
+  border-radius: .8rem;
+}
+
+.summary-num {
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.summary-label {
+  font-size: .85rem;
+  color: rgba(255, 255, 255, .85);
+}
+
+/* --------------------------------------------------------------------------
+   区块与标题
+   -------------------------------------------------------------------------- */
+.section {
+  padding: 3.25rem 0;
+}
+
+.section-alt {
+  background: #fff;
+}
+
+.section-title {
+  font-weight: 700;
+  color: var(--brand-dark);
+  position: relative;
+  padding-bottom: .55rem;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 46px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   场馆卡片（首页 / 查询页共用）
+   -------------------------------------------------------------------------- */
+.venue-card {
+  border: 0;
+  border-radius: .9rem;
+  box-shadow: 0 4px 16px rgba(31, 41, 55, .08);
+  transition: transform .2s ease, box-shadow .2s ease;
+  height: 100%;
+}
+
+.venue-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(31, 41, 55, .14);
+}
+
+.venue-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .9rem;
+}
+
+.venue-name {
+  font-weight: 700;
+  margin: 0;
+}
+
+.venue-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: .7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background: var(--brand-light);
+  color: var(--brand);
+  margin-right: .5rem;
+}
+
+.venue-count {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--brand-dark);
+  line-height: 1.1;
+}
+
+.venue-count small {
+  font-size: .88rem;
+  font-weight: 400;
+  color: #8a98a5;
+}
+
+.rate-ok .progress-bar { background: var(--ok); }
+.rate-warn .progress-bar { background: var(--warn); }
+.rate-busy .progress-bar { background: var(--busy); }
+
+.venue-meta {
+  color: #5f7180;
+  font-size: .88rem;
+  margin-top: .7rem;
+  margin-bottom: 0;
+}
+
+.venue-meta .bi {
+  color: var(--brand);
+  margin-right: .35rem;
+}
+
+.level-badge {
+  font-size: .78rem;
+  padding: .35em .7em;
+}
+
+/* --------------------------------------------------------------------------
+   筛选与查询
+   -------------------------------------------------------------------------- */
+.filter-card {
+  border: 0;
+  border-radius: .9rem;
+  box-shadow: 0 4px 16px rgba(31, 41, 55, .08);
+}
+
+.filter-title {
+  color: var(--brand-dark);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   统计表格
+   -------------------------------------------------------------------------- */
+.rank-no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #e6eef0;
+  color: var(--brand-dark);
+  font-weight: 700;
+}
+
+.rank-no.top1 { background: #fde68a; color: #92400e; }
+.rank-no.top2 { background: #e5e7eb; color: #4b5563; }
+.rank-no.top3 { background: #f5d7b8; color: #9a3412; }
+
+.peak-tag {
+  background: var(--brand-light);
+  color: var(--brand-dark);
+  border-radius: 1rem;
+  padding: .2em .7em;
+  font-size: .82rem;
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   图表
+   -------------------------------------------------------------------------- */
+.chart-box {
+  width: 100%;
+  height: 400px;
+}
+
+.chart-source {
+  font-size: .85rem;
+  margin-top: .5rem;
+}
+
+/* --------------------------------------------------------------------------
+   占位 / 错误提示
+   -------------------------------------------------------------------------- */
+.placeholder-block {
+  border: 2px dashed #bfd8db;
+  border-radius: .75rem;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #6e969b;
+  background: #fbfefe;
+}
+
+.placeholder-block .bi {
+  font-size: 2.2rem;
+  display: block;
+  margin-bottom: .5rem;
+}
+
+/* --------------------------------------------------------------------------
+   三维子页
+   -------------------------------------------------------------------------- */
+.scene-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.scene-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+}
+
+#three-container {
+  position: absolute;
+  inset: 0;
+}
+
+#three-container canvas {
+  display: block;
+}
+
+.scene-hud {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .5rem;
+  flex-wrap: wrap;
+  pointer-events: none;
+}
+
+.hud-card,
+.hud-actions {
+  pointer-events: auto;
+}
+
+.hud-card {
+  background: rgba(255, 255, 255, .92);
+  border-radius: .7rem;
+  padding: .55rem .9rem;
+  box-shadow: 0 2px 10px rgba(31, 41, 55, .15);
+}
+
+.hud-card h6 {
+  color: var(--brand-dark);
+  font-size: .9rem;
+}
+
+.hud-card p {
+  font-size: .8rem;
+  color: #54667a;
+  margin: 0;
+}
+
+.hud-actions {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: wrap;
+}
+
+#btn-rotate.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.dot {
+  display: inline-block;
+  width: .65em;
+  height: .65em;
+  border-radius: 50%;
+  margin: 0 .25em 0 .55em;
+}
+
+.dot-ok { background: var(--ok); }
+.dot-warn { background: var(--warn); }
+.dot-busy { background: var(--busy); }
+
+.scene-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  align-items: center;
+  justify-content: center;
+  background: #e8f3f4;
+  color: var(--brand-dark);
+}
+
+/* --------------------------------------------------------------------------
+   页脚
+   -------------------------------------------------------------------------- */
+.site-footer {
+  background: var(--brand-dark);
+  color: rgba(255, 255, 255, .78);
+  padding: 1.4rem 0;
+}
+
+/* --------------------------------------------------------------------------
+   响应式：手机 375px 档
+   -------------------------------------------------------------------------- */
+@media (max-width: 575.98px) {
+  .hero {
+    padding: 2.6rem 0;
+  }
+
+  .hero h1 {
+    font-size: 1.55rem;
+  }
+
+  .campus-summary {
+    gap: 1.1rem;
+    justify-content: space-between;
+  }
+
+  .summary-num {
+    font-size: 1.35rem;
+  }
+
+  .section {
+    padding: 2.4rem 0;
+  }
+
+  .chart-box {
+    height: 300px;
+  }
+
+  .scene-hud {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+  }
+
+  .hud-card p {
+    display: none;
+  }
+}

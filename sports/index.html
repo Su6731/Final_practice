@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校园运动场馆信息系统</title>
+  <meta name="description" content="校园公共信息与数据展示中心 · 运动场馆：实时在馆人数、昨日人流量与高峰期排行、三维场馆导览">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div id="cdn-fail" class="alert alert-danger alert-ribbon d-none" role="alert">
+    <i class="bi bi-wifi-off me-1"></i>CDN 资源加载失败（可能处于断网状态），样式或图表可能不可用，请检查网络后刷新页面。
+  </div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark brand-nav sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">
+        <i class="bi bi-trophy-fill me-1"></i>运动场馆信息系统
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+        aria-controls="navMenu" aria-expanded="false" aria-label="切换导航">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">首页</a></li>
+          <li class="nav-item"><a class="nav-link" href="venues.html">场馆查询</a></li>
+          <li class="nav-item"><a class="nav-link" href="stats.html">昨日统计</a></li>
+          <li class="nav-item"><a class="nav-link" href="three-d/scene.html">三维导览</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <h1 class="display-6">校园运动场馆信息</h1>
+      <p class="lead col-lg-9 mb-0">
+        覆盖<span class="fw-bold"> 操场 · 篮球馆 · 羽毛球馆 · 排球场 · 网球场 · 游泳馆 </span>六处场馆，
+        实时展示当前在馆人数，另提供昨日人流量、高峰期排行与三维场馆导览。
+      </p>
+      <div class="campus-summary">
+        <div class="campus-summary-item">
+          <span class="summary-num" id="sum-current">-</span>
+          <span class="summary-label">当前在馆总人数（人）</span>
+        </div>
+        <div class="campus-summary-item">
+          <span class="summary-num" id="sum-capacity">-</span>
+          <span class="summary-label">总容量（人）</span>
+        </div>
+        <div class="campus-summary-item">
+          <span class="summary-num" id="sum-rate">-</span>
+          <span class="summary-label">整体占用率</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">各场馆当前人数</h2>
+        <p class="text-muted small mb-4">
+          拥挤程度：占用率 &lt; 60% 空闲 · 60%–85% 适中 · &gt; 85% 拥挤（人数为当前快照，课堂演示模拟值）
+        </p>
+        <div id="venue-list" class="row g-4"></div>
+        <div id="venue-empty" class="placeholder-block d-none">
+          <i class="bi bi-inboxes"></i>
+          <p class="mb-0">暂无场馆数据，请检查 data/data.json 内容后刷新页面。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">快速入口</h2>
+        <div class="row g-4">
+          <div class="col-sm-6 col-lg-4">
+            <div class="card venue-card">
+              <div class="card-body">
+                <h5><i class="bi bi-funnel me-1 text-primary"></i>场馆查询</h5>
+                <p class="text-muted mb-3">按名称搜索，按室内 / 室外与拥挤状态筛选。</p>
+                <a href="venues.html" class="btn btn-sm btn-outline-primary">进入查询 <i class="bi bi-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <div class="card venue-card">
+              <div class="card-body">
+                <h5><i class="bi bi-bar-chart-line me-1 text-primary"></i>昨日统计</h5>
+                <p class="text-muted mb-3">表格排行各场馆昨日人流量与高峰期，配柱状图、折线图与占比图。</p>
+                <a href="stats.html" class="btn btn-sm btn-outline-primary">查看统计 <i class="bi bi-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <div class="card venue-card">
+              <div class="card-body">
+                <h5><i class="bi bi-box-seam me-1 text-primary"></i>三维导览</h5>
+                <p class="text-muted mb-3">三维场景俯瞰六处场馆，颜色随当前占用率变化。</p>
+                <a href="three-d/scene.html" class="btn btn-sm btn-outline-primary">进入三维区 <i class="bi bi-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+      <span class="mb-0"><i class="bi bi-trophy-fill me-1"></i>校园公共信息与数据展示中心 · 运动场馆</span>
+      <span class="mb-0"><small>© <span id="year"></span> 数据为教学演示模拟值</small></span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/index.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      if (!window.jQuery || !window.bootstrap || !window.SportsData) {
+        document.getElementById('cdn-fail').classList.remove('d-none');
+      }
+    });
+  </script>
+</body>
+
+</html>
