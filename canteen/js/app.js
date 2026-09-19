@@ -57,7 +57,8 @@
   var state = {
     canteens: [],
     simulateTimer: null,
-    simulating: false
+    simulating: false,
+    charts: { flow: null, shop: null } // ECharts 实例：同一容器只 init 一次，防止叠影
   };
 
   /* ========================================================================
@@ -185,6 +186,197 @@
       $('#canteen-list').html(state.canteens.map(canteenCardHtml).join(''));
     },
 
+    // 各食堂客流 Top1 门店卡片
+    topShops: function () {
+      var medalColors = ['#f1c40f', '#bdc3c7', '#cd7f32']; // 金/银/铜
+
+      var html = state.canteens.map(function (c, i) {
+        var sorted = c.shops.slice().sort(function (a, b) {
+          return b.flow - a.flow;
+        });
+        var top = sorted[0];
+
+        if (!top) {
+          return [
+            '<div class="col-md-4">',
+            '  <div class="card top-shop-card h-100"><div class="card-body text-muted">',
+            '    <i class="bi bi-inboxes me-1"></i>', c.name, '暂无门店客流数据',
+            '  </div></div>',
+            '</div>'
+          ].join('');
+        }
+
+        var sortedHtml = sorted.slice(1, 4).map(function (s, j) {
+          return [
+            '<li class="list-group-item d-flex justify-content-between align-items-center">',
+            '  <span><span class="rank-no rank-' + (j + 2) + '">', j + 2, '</span>', s.name, '</span>',
+            '  <span class="text-muted">', s.flow, ' 人次</span>',
+            '</li>'
+          ].join('');
+        }).join('');
+
+        return [
+          '<div class="col-md-4">',
+          '  <div class="card top-shop-card h-100">',
+          '    <div class="card-body">',
+          '      <div class="d-flex justify-content-between align-items-center mb-2">',
+          '        <h6 class="mb-0 top-shop-canteen"><i class="bi bi-shop me-1"></i>', c.name, '</h6>',
+          '        <span class="top-medal" style="background:', medalColors[i % 3], '">',
+          '          <i class="bi bi-trophy-fill"></i>',
+          '        </span>',
+          '      </div>',
+          '      <div class="top-shop-name">', top.name, '</div>',
+          '      <div class="top-shop-flow">当日客流 ', top.flow.toLocaleString('zh-CN'), ' 人次</div>',
+          '    </div>',
+          sorted ? '<ul class="list-group list-group-flush">' + sortedHtml + '</ul>' : '',
+          '  </div>',
+          '</div>'
+        ].join('');
+      }).join('');
+
+      $('#top-shops').html(html);
+    },
+
+    // 当日人流：三食堂分时段分组柱状图
+    flowChart: function (meta) {
+      if (!window.echarts || !document.getElementById('flow-chart')) {
+        return;
+      }
+
+      var hours = state.canteens.length && state.canteens[0].hourlyFlow.length
+        ? state.canteens[0].hourlyFlow.map(function (row) {
+            return row.hour;
+          })
+        : [];
+      var seriesColors = ['#d35400', '#27ae60', '#2980b9'];
+
+      var series = state.canteens.map(function (c, i) {
+        return {
+          name: c.name,
+          type: 'bar',
+          barMaxWidth: 18,
+          data: c.hourlyFlow.map(function (row) {
+            return row.count;
+          }),
+          itemStyle: {
+            color: seriesColors[i % seriesColors.length],
+            borderRadius: [3, 3, 0, 0]
+          }
+        };
+      });
+
+      state.charts.flow = initChart('flow-chart', state.charts.flow, {
+        title: {
+          text: '三食堂当日分时段人流量',
+          left: 'center',
+          textStyle: { fontSize: 16, color: '#2c3e50' }
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          valueFormatter: function (value) {
+            return value + ' 人次';
+          }
+        },
+        legend: { top: 32 },
+        grid: { left: 16, right: 20, top: 76, bottom: 40, containLabel: true },
+        xAxis: {
+          type: 'category',
+          data: hours,
+          name: '时段',
+          axisLabel: { color: '#7f8c8d' }
+        },
+        yAxis: {
+          type: 'value',
+          name: '人次/小时',
+          axisLabel: { color: '#7f8c8d' },
+          splitLine: { lineStyle: { type: 'dashed' } }
+        },
+        series: series
+      });
+
+      $('#flow-source').text(meta.source);
+    },
+
+    // 各食堂 Top3 门店横向条形图
+    shopChart: function () {
+      if (!window.echarts || !document.getElementById('shop-chart')) {
+        return;
+      }
+
+      var seriesColors = ['#d35400', '#27ae60', '#2980b9'];
+      var categories = [];
+      var series = state.canteens.map(function (c, i) {
+        var top3 = c.shops.slice().sort(function (a, b) {
+          return b.flow - a.flow;
+        }).slice(0, 3);
+
+        // 每个食堂占 3 行，倒序排列使第 1 名在最上方
+        top3.slice().reverse().forEach(function (s) {
+          categories.push(c.name + ' · ' + s.name);
+        });
+
+        return {
+          name: c.name,
+          type: 'bar',
+          barMaxWidth: 16,
+          stack: null,
+          data: top3.slice().reverse().map(function (s) {
+            return s.flow;
+          }),
+          itemStyle: {
+            color: seriesColors[i % seriesColors.length],
+            borderRadius: [0, 3, 3, 0]
+          }
+        };
+      });
+
+      // 三个系列共用同一 y 轴，但各自只在自己区间有值：其余区间补 null
+      var per = 3;
+      var aligned = series.map(function (s, i) {
+        var data = [];
+        for (var k = 0; k < state.canteens.length * per; k++) {
+          data.push(k >= i * per && k < (i + 1) * per ? s.data[k - i * per] : null);
+        }
+        return {
+          name: s.name,
+          type: 'bar',
+          barMaxWidth: 16,
+          data: data,
+          itemStyle: s.itemStyle
+        };
+      });
+
+      state.charts.shop = initChart('shop-chart', state.charts.shop, {
+        title: {
+          text: '各食堂当日客流 Top3 门店',
+          left: 'center',
+          textStyle: { fontSize: 16, color: '#2c3e50' }
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          valueFormatter: function (value) {
+            return value === null ? '-' : value + ' 人次';
+          }
+        },
+        legend: { top: 32 },
+        grid: { left: 16, right: 48, top: 76, bottom: 24, containLabel: true },
+        xAxis: {
+          type: 'value',
+          name: '人次',
+          axisLabel: { color: '#7f8c8d' },
+          splitLine: { lineStyle: { type: 'dashed' } }
+        },
+        yAxis: {
+          type: 'category',
+          data: categories,
+          axisLabel: { color: '#54667a', fontSize: 11 }
+        },
+        series: aligned
+      });
+    },
+
     empty: function () {
       $('#canteen-list').empty();
       $('#canteen-empty').removeClass('d-none');
@@ -192,6 +384,21 @@
       $('#campus-rate').text('—');
     }
   };
+
+  // 图表实例管理：同一容器只 init 一次，数据变化只 setOption；窗口缩放自适应
+  function initChart(elementId, existed, option) {
+    var chart = existed || window.echarts.init(document.getElementById(elementId));
+    chart.setOption(option, true);
+    return chart;
+  }
+
+  window.addEventListener('resize', function () {
+    Object.keys(state.charts).forEach(function (key) {
+      if (state.charts[key]) {
+        state.charts[key].resize();
+      }
+    });
+  });
 
   /* ========================================================================
      bindEvents：实时模拟开关（jQuery）
@@ -258,10 +465,10 @@
       }
       state.canteens = result.canteens;
       render.overview();
+      render.topShops();
+      render.flowChart(result.meta);
+      render.shopChart();
       startSimulate();
-
-      // 图表与门店排行在第二次提交接入（此处仅透出数据供后续使用）
-      window.__canteenData = result;
     });
   });
 })();

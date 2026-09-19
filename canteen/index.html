@@ -91,24 +91,39 @@
       </div>
     </section>
 
-    <!-- 模块二：当日人流图表（占位，第 2 次提交接入 ECharts） -->
+    <!-- 模块二：当日人流图表（ECharts 分组柱状图，读取 data/data.json） -->
     <section id="flow" class="section section-alt">
       <div class="container">
         <h2 class="section-title">当日人流量</h2>
-        <div class="placeholder-block">
-          <i class="bi bi-graph-up"></i>
-          <p class="mb-0">【当日人流】分时段分组柱状图将在第二次提交接入。</p>
+        <div class="card">
+          <div class="card-body">
+            <div id="flow-chart" class="chart-box" role="img" aria-label="三食堂当日分时段人流量柱状图"></div>
+            <p class="chart-source text-muted text-center mb-0">
+              <i class="bi bi-info-circle me-1"></i>
+              数据来源：<span id="flow-source">data/data.json</span>；统计日期：2026-09-19；单位：人次/小时
+            </p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 模块三：门店客流排行（占位，第 2 次提交接入） -->
+    <!-- 模块三：门店客流排行 -->
     <section id="shops" class="section">
       <div class="container">
         <h2 class="section-title">门店客流排行</h2>
-        <div class="placeholder-block">
-          <i class="bi bi-trophy"></i>
-          <p class="mb-0">【门店排行】各食堂客流最高门店与 Top3 条形图将在第二次提交接入。</p>
+
+        <!-- 各食堂客流 Top1 门店 -->
+        <div id="top-shops" class="row g-4 mb-4"></div>
+
+        <!-- 各食堂 Top3 门店条形图 -->
+        <div class="card">
+          <div class="card-body">
+            <div id="shop-chart" class="chart-box" role="img" aria-label="各食堂客流前三门店条形图"></div>
+            <p class="chart-source text-muted text-center mb-0">
+              <i class="bi bi-info-circle me-1"></i>
+              统计口径：当日累计客流 Top3 门店；单位：人次
+            </p>
+          </div>
         </div>
       </div>
     </section>
