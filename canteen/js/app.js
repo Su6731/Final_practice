@@ -1,8 +1,8 @@
 /* ==========================================================================
    校园食堂信息系统 · 交互逻辑
-   分层约定：data（数据处理，原生 JS） / render（渲染） / bindEvents（事件）
-   DOM 查询与事件统一用 jQuery，数据处理用原生 JS，不在同一处混写。
-   第一次提交：实时总览与模拟刷新；图表在第二次提交加入。
+   分层约定：data（数据处理，原生 JS） / render（渲染）
+   DOM 查询用 jQuery，数据处理用原生 JS，不在同一处混写。
+   当前人数为静态快照；人流量与门店客流为昨日统计数据。
    ========================================================================== */
 (function () {
   'use strict';
@@ -56,8 +56,6 @@
   // 页面运行状态统一收口，避免散落的全局变量
   var state = {
     canteens: [],
-    simulateTimer: null,
-    simulating: false,
     charts: { flow: null, shop: null } // ECharts 实例：同一容器只 init 一次，防止叠影
   };
 
@@ -96,7 +94,7 @@
           return {
             canteens: data.normalize(payload),
             meta: {
-              updatedTime: payload.updatedTime || '—',
+              date: payload.date || '—',
               source: payload.source || 'data/data.json（课堂演示模拟数据）',
               offline: false
             }
@@ -108,7 +106,7 @@
           return {
             canteens: data.normalize({ canteens: FALLBACK_CANTEENS }),
             meta: {
-              updatedTime: '—（内置示例）',
+              date: '昨日（内置示例）',
               source: '内置示例数据（建议用本地服务器打开以读取 data/data.json）',
               offline: true
             }
@@ -126,15 +124,6 @@
         return { key: 'warn', text: '适中', badge: 'text-bg-warning' };
       }
       return { key: 'busy', text: '拥挤', badge: 'text-bg-danger' };
-    },
-
-    // 实时模拟：按 ±3% 随机波动，限制在 [0, capacity]
-    simulate: function () {
-      state.canteens.forEach(function (c) {
-        var delta = Math.round(c.capacity * (Math.random() * 0.06 - 0.03));
-        c.current = Math.min(c.capacity, Math.max(0, c.current + delta));
-      });
-      render.overview();
     }
   };
 
@@ -162,7 +151,7 @@
       '        <span>占用率 ', rate, '%</span>',
       '        <span>开放时间 ', c.hours, '</span>',
       '      </div>',
-      '      <p class="canteen-meta mb-0"><i class="bi bi-activity"></i>每 5 秒模拟刷新实时人数</p>',
+      '      <p class="canteen-meta mb-0"><i class="bi bi-activity"></i>当前在堂人数（快照）</p>',
       '    </div>',
       '  </div>',
       '</div>'
@@ -226,7 +215,7 @@
           '        </span>',
           '      </div>',
           '      <div class="top-shop-name">', top.name, '</div>',
-          '      <div class="top-shop-flow">当日客流 ', top.flow.toLocaleString('zh-CN'), ' 人次</div>',
+          '      <div class="top-shop-flow">昨日客流 ', top.flow.toLocaleString('zh-CN'), ' 人次</div>',
           '    </div>',
           sorted ? '<ul class="list-group list-group-flush">' + sortedHtml + '</ul>' : '',
           '  </div>',
@@ -267,7 +256,7 @@
 
       state.charts.flow = initChart('flow-chart', state.charts.flow, {
         title: {
-          text: '三食堂当日分时段人流量',
+          text: '三食堂昨日分时段人流量',
           left: 'center',
           textStyle: { fontSize: 16, color: '#2c3e50' }
         },
@@ -296,6 +285,7 @@
       });
 
       $('#flow-source').text(meta.source);
+      $('#flow-date').text(meta.date);
     },
 
     // 各食堂 Top3 门店横向条形图
@@ -349,7 +339,7 @@
 
       state.charts.shop = initChart('shop-chart', state.charts.shop, {
         title: {
-          text: '各食堂当日客流 Top3 门店',
+          text: '各食堂昨日客流 Top3 门店',
           left: 'center',
           textStyle: { fontSize: 16, color: '#2c3e50' }
         },
@@ -401,62 +391,10 @@
   });
 
   /* ========================================================================
-     bindEvents：实时模拟开关（jQuery）
-     ======================================================================== */
-  function startSimulate() {
-    if (state.simulateTimer) {
-      return;
-    }
-    state.simulating = true;
-    state.simulateTimer = window.setInterval(function () {
-      data.simulate();
-      render.updatedTime(new Date());
-    }, 5000);
-
-    $('#btn-simulate')
-      .addClass('active')
-      .attr('aria-pressed', 'true')
-      .html('<i class="bi bi-pause-fill me-1"></i>暂停实时模拟');
-  }
-
-  function stopSimulate() {
-    if (state.simulateTimer) {
-      window.clearInterval(state.simulateTimer);
-      state.simulateTimer = null;
-    }
-    state.simulating = false;
-
-    $('#btn-simulate')
-      .removeClass('active')
-      .attr('aria-pressed', 'false')
-      .html('<i class="bi bi-play-fill me-1"></i>恢复实时模拟');
-  }
-
-  function bindEvents() {
-    $('#btn-simulate').on('click', function () {
-      if (state.simulating) {
-        stopSimulate();
-      } else {
-        startSimulate();
-      }
-    });
-  }
-
-  render.updatedTime = function (date) {
-    var pad = function (n) {
-      return String(n).padStart(2, '0');
-    };
-    $('#updated-time').text(
-      pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds())
-    );
-  };
-
-  /* ========================================================================
      初始化入口
      ======================================================================== */
   $(function () {
     $('#year').text(new Date().getFullYear());
-    bindEvents();
 
     data.load().then(function (result) {
       if (!result.canteens.length) {
@@ -468,7 +406,6 @@
       render.topShops();
       render.flowChart(result.meta);
       render.shopChart();
-      startSimulate();
     });
   });
 })();

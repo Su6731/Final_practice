@@ -364,6 +364,7 @@
       }
     }
 
+    // 数据为静态快照：当前人数来自 data.json，不做前端模拟波动
     function applyCanteens(list) {
       list.forEach(function (c) {
         const entry = canteenMap[c.id];
@@ -380,26 +381,9 @@
       });
     }
 
-    // 与首页一致的 5 秒模拟刷新（三维页本地模拟，两端数值各自独立演示）
-    function startSimulation() {
-      window.setInterval(function () {
-        Object.keys(canteenMap).forEach(function (key) {
-          const entry = canteenMap[key];
-          const delta = Math.round(entry.capacity * (Math.random() * 0.06 - 0.03));
-          entry.current = Math.min(entry.capacity, Math.max(0, entry.current + delta));
-
-          const rate = entry.current / entry.capacity;
-          entry.headMat.color.setHex(LEVEL_COLORS[levelKeyOf(rate)]);
-          entry.label.userData.update(entry.current);
-          updateQueue(entry, entry.current, entry.capacity);
-        });
-      }, 5000);
-    }
-
     loadData().then(function (result) {
       if (result.list.length) {
         applyCanteens(result.list);
-        startSimulation();
       } else {
         // 空数据：楼体保持灰色、名牌显示 0 人，并在加载位提示
         document.getElementById('scene-loading-text').textContent = '暂无食堂数据（data.json 为空）';

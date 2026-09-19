@@ -34,7 +34,7 @@
       <div class="collapse navbar-collapse" id="navMenu">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item"><a class="nav-link active" href="#overview">总览</a></li>
-          <li class="nav-item"><a class="nav-link" href="#flow">当日人流</a></li>
+          <li class="nav-item"><a class="nav-link" href="#flow">昨日人流</a></li>
           <li class="nav-item"><a class="nav-link" href="#shops">门店排行</a></li>
           <li class="nav-item"><a class="nav-link" href="three-d/scene.html">三维导览</a></li>
         </ul>
@@ -45,9 +45,9 @@
   <!-- Hero：全校区实时汇总 -->
   <header class="hero">
     <div class="container">
-      <h1 class="display-6">校园食堂实时人流监测</h1>
+      <h1 class="display-6">校园食堂人流信息</h1>
       <p class="lead col-lg-8">
-        覆盖<span class="fw-bold"> 品味堂 · 余味堂 · 知味堂 </span>三座食堂，实时人数每 5 秒模拟刷新。
+        覆盖<span class="fw-bold"> 品味堂 · 余味堂 · 知味堂 </span>三座食堂，实时展示当前人数，人流量与门店客流统计至昨日。
       </p>
       <div class="campus-summary">
         <div class="campus-summary-item">
@@ -67,20 +67,12 @@
   </header>
 
   <main>
-    <!-- 模块一：三食堂实时人数总览 -->
+    <!-- 模块一：三食堂当前人数总览 -->
     <section id="overview" class="section">
       <div class="container">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-          <h2 class="section-title mb-0">食堂实时人数</h2>
-          <div class="d-flex align-items-center gap-2">
-            <span class="text-muted small">数据更新：<span id="updated-time">-</span></span>
-            <button id="btn-simulate" class="btn btn-sm btn-outline-primary" type="button" aria-pressed="true">
-              <i class="bi bi-pause-fill me-1"></i>暂停实时模拟
-            </button>
-          </div>
-        </div>
+        <h2 class="section-title">食堂当前人数</h2>
         <p class="text-muted small mb-4">
-          拥挤程度：占用率 &lt; 60% 空闲 · 60%–85% 适中 · &gt; 85% 拥挤（数据为课堂演示模拟值）
+          拥挤程度：占用率 &lt; 60% 空闲 · 60%–85% 适中 · &gt; 85% 拥挤（人数为当前快照，人流与客流为昨日统计，均为课堂演示模拟值）
         </p>
         <div id="canteen-list" class="row g-4"></div>
         <!-- 空数据提示（fetch 成功但无食堂数据时显示） -->
@@ -91,16 +83,16 @@
       </div>
     </section>
 
-    <!-- 模块二：当日人流图表（ECharts 分组柱状图，读取 data/data.json） -->
+    <!-- 模块二：昨日人流图表（ECharts 分组柱状图，读取 data/data.json） -->
     <section id="flow" class="section section-alt">
       <div class="container">
-        <h2 class="section-title">当日人流量</h2>
+        <h2 class="section-title">昨日人流量</h2>
         <div class="card">
           <div class="card-body">
-            <div id="flow-chart" class="chart-box" role="img" aria-label="三食堂当日分时段人流量柱状图"></div>
+            <div id="flow-chart" class="chart-box" role="img" aria-label="三食堂昨日分时段人流量柱状图"></div>
             <p class="chart-source text-muted text-center mb-0">
               <i class="bi bi-info-circle me-1"></i>
-              数据来源：<span id="flow-source">data/data.json</span>；统计日期：2026-09-19；单位：人次/小时
+              数据来源：<span id="flow-source">data/data.json</span>；统计日期：<span id="flow-date">-</span>；单位：人次/小时
             </p>
           </div>
         </div>
@@ -121,7 +113,7 @@
             <div id="shop-chart" class="chart-box" role="img" aria-label="各食堂客流前三门店条形图"></div>
             <p class="chart-source text-muted text-center mb-0">
               <i class="bi bi-info-circle me-1"></i>
-              统计口径：当日累计客流 Top3 门店；单位：人次
+              统计口径：昨日累计客流 Top3 门店；单位：人次
             </p>
           </div>
         </div>
