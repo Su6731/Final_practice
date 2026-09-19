@@ -11,9 +11,11 @@
 
 ## 运行方法
 
-**推荐：本地 HTTP 服务器**（图表与三维页需要 `fetch` 读取本地 JSON）
+### 方式一：一键启动（推荐）
 
-在仓库根目录（本文件的上两级）执行：
+双击 `canteen/启动服务器.bat`——自动在仓库根目录启动本地服务器（端口 8123）并打开首页，关闭弹出的命令行窗口即停止服务。此方式下页面通过 `fetch` 读取 `data/data.json`，修改数据文件后刷新即可生效。
+
+等价的手动命令（在仓库根目录执行）：
 
 ```bash
 python -m http.server 8123
@@ -24,7 +26,9 @@ python -m http.server 8123
 - 首页：<http://localhost:8123/canteen/index.html>
 - 三维导览：<http://localhost:8123/canteen/three-d/scene.html>
 
-也可以**直接双击 `index.html`** 以 `file://` 方式打开：浏览器禁止读取本地 JSON，页面自动改用 `js/app.js` 内置的同款示例数据，总览与图表仍可正常使用（数据来源会提示为"内置示例数据"）；三维页则提示数据加载失败但场景仍可浏览。
+### 方式二：直接双击 index.html（file://）
+
+不启动服务器、直接双击 `canteen/index.html` 也能完整使用：浏览器安全策略禁止 `file://` 页面读取本地 JSON，此时页面自动改用 `js/app.js` 与 `scene.html` 内置的同款示例数据（图表下方的"数据来源"会提示为内置示例数据）。限制：修改 `data/data.json` 不会生效，需改 `js/app.js` 中的 `FALLBACK_CANTEENS`。
 
 > 注意：所有第三方库走 CDN，首次打开需要联网；断网时页面顶部会出现红色提示条。
 
@@ -33,6 +37,7 @@ python -m http.server 8123
 ```text
 canteen/
 ├── index.html              # 统一入口（总览 / 昨日人流 / 门店排行三个锚点区块）
+├── 启动服务器.bat           # 一键启动本地服务器并打开首页（Windows 双击）
 ├── css/
 │   └── style.css           # 自定义样式，在 Bootstrap CSS 之后引入
 ├── js/

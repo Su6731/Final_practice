@@ -351,7 +351,13 @@
         scene.add(tree);
       });
 
-    /* ---------- 数据加载与实时同步（与首页同一份 data.json，模块间数据衔接） ---------- */
+    /* ---------- 数据加载（file:// 直开时 fetch 被拦截，回退内置兜底数据） ---------- */
+    const FALLBACK_CANTEENS = [
+      { id: 'pinwei', name: '品味堂', capacity: 850, current: 536 },
+      { id: 'yuwei', name: '余味堂', capacity: 620, current: 418 },
+      { id: 'zhiwei', name: '知味堂', capacity: 700, current: 302 }
+    ];
+
     async function loadData() {
       try {
         const res = await fetch('../data/data.json', { cache: 'no-store' });
@@ -359,8 +365,8 @@
         const payload = await res.json();
         return { list: payload.canteens || [], source: payload.source || '../data/data.json' };
       } catch (err) {
-        console.warn('[三维导览] data.json 读取失败，等待首页同款兜底逻辑不可用，改用空数据：', err.message);
-        return { list: [], source: '数据加载失败' };
+        console.warn('[三维导览] data.json 读取失败，改用内置示例数据：', err.message);
+        return { list: FALLBACK_CANTEENS, source: '内置示例数据（建议用本地服务器打开以读取 data.json）' };
       }
     }
 

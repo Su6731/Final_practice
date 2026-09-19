@@ -73,7 +73,10 @@
           current: Number(c.current) || 0,
           hours: c.hours || '—',
           hourlyFlow: (c.hourlyFlow || []).map(function (row) {
-            return { hour: String(row.hour), count: Number(row.count) || 0 };
+            // 兼容两种写法：{hour, count} 对象（data.json）或 [时段, 数值] 数组（内置兜底）
+            var hour = Array.isArray(row) ? row[0] : row.hour;
+            var count = Array.isArray(row) ? row[1] : row.count;
+            return { hour: String(hour), count: Number(count) || 0 };
           }),
           shops: (c.shops || []).map(function (s) {
             return { name: s.name, flow: Number(s.flow) || 0 };
