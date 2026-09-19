@@ -1,0 +1,207 @@
+/* ==========================================================================
+   校园公共信息与数据展示中心 · 自定义样式
+   引入位置：Bootstrap CSS 之后（只做主题增强，不整体覆盖 Bootstrap）
+   ========================================================================== */
+
+:root {
+  --brand: #1769aa;
+  --brand-dark: #0d4771;
+  --brand-light: #e8f1f9;
+  --accent: #f59e0b;
+  --ink: #1f2d3d;
+  --bg-soft: #f4f7fa;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: var(--bg-soft);
+  overflow-x: hidden; /* 自查项：375 / 768 / 1200 三档宽度下均无横向滚动条 */
+}
+
+/* --------------------------------------------------------------------------
+   断网 / CDN 失败提示条
+   -------------------------------------------------------------------------- */
+.alert-ribbon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  margin: 0;
+  border-radius: 0;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   统一导航
+   -------------------------------------------------------------------------- */
+.brand-nav {
+  background: linear-gradient(90deg, var(--brand-dark), var(--brand));
+  box-shadow: 0 2px 12px rgba(13, 71, 113, .25);
+}
+
+.brand-nav .nav-link {
+  color: rgba(255, 255, 255, .85);
+  font-weight: 500;
+  margin: 0 .25rem;
+  padding-left: .85rem !important;
+  padding-right: .85rem !important;
+  border-radius: .5rem;
+}
+
+.brand-nav .nav-link:hover,
+.brand-nav .nav-link.active {
+  color: #fff;
+  background: rgba(255, 255, 255, .18);
+}
+
+/* --------------------------------------------------------------------------
+   区块与标题
+   -------------------------------------------------------------------------- */
+.section {
+  padding: 4rem 0;
+  scroll-margin-top: 72px; /* sticky 导航下锚点定位不被遮挡 */
+}
+
+.section-alt {
+  background: #fff;
+}
+
+.section-title {
+  font-weight: 700;
+  color: var(--brand-dark);
+  position: relative;
+  padding-bottom: .6rem;
+  margin-bottom: 1.75rem;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 48px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.section-title.text-center::after {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* --------------------------------------------------------------------------
+   首页 Hero 与模块卡片
+   -------------------------------------------------------------------------- */
+.hero {
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 60%, #2e8bc0 100%);
+  padding: 4.5rem 0;
+}
+
+.hero h1 {
+  font-weight: 700;
+}
+
+.hero .lead {
+  color: rgba(255, 255, 255, .9);
+}
+
+.module-card {
+  border: 0;
+  border-radius: .9rem;
+  box-shadow: 0 4px 16px rgba(31, 45, 61, .08);
+  transition: transform .2s ease, box-shadow .2s ease;
+  height: 100%;
+}
+
+.module-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(31, 45, 61, .14);
+}
+
+.module-card .icon-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: var(--brand-light);
+  color: var(--brand);
+  margin-bottom: 1rem;
+}
+
+.module-card .card-footer {
+  background: transparent;
+  border: 0;
+  padding-top: 0;
+}
+
+/* --------------------------------------------------------------------------
+   占位区块（骨架阶段使用）
+   -------------------------------------------------------------------------- */
+.placeholder-block {
+  border: 2px dashed #c7d4e0;
+  border-radius: .75rem;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #8aa0b4;
+  background: #fbfdff;
+}
+
+.placeholder-block .bi {
+  font-size: 2.2rem;
+  display: block;
+  margin-bottom: .5rem;
+}
+
+/* --------------------------------------------------------------------------
+   三维子页占位（第一次提交）
+   -------------------------------------------------------------------------- */
+.simple-page {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.simple-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 3rem 0;
+}
+
+/* --------------------------------------------------------------------------
+   页脚
+   -------------------------------------------------------------------------- */
+.site-footer {
+  background: var(--brand-dark);
+  color: rgba(255, 255, 255, .75);
+  padding: 1.5rem 0;
+  margin-top: 2rem;
+}
+
+/* --------------------------------------------------------------------------
+   响应式：手机 375px 档
+   -------------------------------------------------------------------------- */
+@media (max-width: 575.98px) {
+  .hero {
+    padding: 3rem 0;
+  }
+
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .section {
+    padding: 2.75rem 0;
+  }
+}
