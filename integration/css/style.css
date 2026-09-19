@@ -190,6 +190,106 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   自习室查询：筛选栏与列表卡片（第二次提交）
+   -------------------------------------------------------------------------- */
+.filter-card {
+  border: 0;
+  border-radius: .9rem;
+  box-shadow: 0 4px 16px rgba(31, 45, 61, .08);
+  position: sticky;
+  top: 84px;
+}
+
+.filter-title {
+  color: var(--brand-dark);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.room-card {
+  border: 0;
+  border-left: 4px solid var(--brand);
+  border-radius: .65rem;
+  box-shadow: 0 2px 10px rgba(31, 45, 61, .07);
+}
+
+.room-card.is-closed {
+  border-left-color: #adb5bd;
+}
+
+.room-name {
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.room-meta {
+  color: #54667a;
+  font-size: .9rem;
+  margin-bottom: 0;
+}
+
+.room-meta li {
+  margin-bottom: .35rem;
+}
+
+.room-meta .bi {
+  color: var(--brand);
+  margin-right: .4rem;
+}
+
+.usage-label {
+  font-size: .8rem;
+  color: #8aa0b4;
+}
+
+.usage-bar {
+  height: .45rem;
+  margin-top: .35rem;
+}
+
+.usage-bar .progress-bar {
+  background: linear-gradient(90deg, var(--brand), #2e8bc0);
+}
+
+/* --------------------------------------------------------------------------
+   使用统计：汇总卡片与图表（第二次提交）
+   -------------------------------------------------------------------------- */
+.stat-card {
+  border: 0;
+  border-radius: .8rem;
+  box-shadow: 0 2px 10px rgba(31, 45, 61, .07);
+}
+
+.stat-label {
+  color: #8aa0b4;
+  font-size: .85rem;
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--brand-dark);
+  margin-top: .25rem;
+}
+
+.stat-value small {
+  font-size: .85rem;
+  font-weight: 400;
+  color: #8aa0b4;
+}
+
+.chart-box {
+  width: 100%;
+  height: 420px;
+}
+
+.chart-source {
+  font-size: .85rem;
+  margin-top: .5rem;
+}
+
+/* --------------------------------------------------------------------------
    响应式：手机 375px 档
    -------------------------------------------------------------------------- */
 @media (max-width: 575.98px) {
@@ -203,5 +303,18 @@ body {
 
   .section {
     padding: 2.75rem 0;
+  }
+
+  /* 手机端筛选栏不需要吸顶，图表压低高度避免横向滚动 */
+  .filter-card {
+    position: static;
+  }
+
+  .chart-box {
+    height: 300px;
+  }
+
+  .stat-value {
+    font-size: 1.35rem;
   }
 }

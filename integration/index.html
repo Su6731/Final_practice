@@ -111,24 +111,105 @@
       </div>
     </section>
 
-    <!-- 模块二：自习室查询（第一次提交为占位，第二次提交接入筛选） -->
+    <!-- 模块二：自习室查询（楼层 / 开放状态即时筛选，列表由 js/app.js 渲染） -->
     <section id="rooms" class="section section-alt">
       <div class="container">
         <h2 class="section-title">自习室查询</h2>
-        <div class="placeholder-block">
-          <i class="bi bi-funnel"></i>
-          <p class="mb-0">【自习室查询】按楼层 / 开放状态筛选的交互将在第二次提交接入。</p>
+        <div class="row g-4">
+          <!-- 筛选条件 -->
+          <div class="col-lg-3">
+            <div class="card filter-card">
+              <div class="card-body">
+                <h6 class="filter-title"><i class="bi bi-funnel me-1"></i>筛选条件</h6>
+                <div class="mb-3">
+                  <label for="filter-floor" class="form-label">楼层</label>
+                  <select id="filter-floor" class="form-select form-select-sm">
+                    <option value="all" selected>全部楼层</option>
+                    <option value="1">1 层</option>
+                    <option value="2">2 层</option>
+                    <option value="3">3 层</option>
+                    <option value="4">4 层</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="filter-status" class="form-label">开放状态</label>
+                  <select id="filter-status" class="form-select form-select-sm">
+                    <option value="all" selected>全部状态</option>
+                    <option value="open">开放中</option>
+                    <option value="closed">已关闭</option>
+                  </select>
+                </div>
+                <button id="filter-reset" type="button" class="btn btn-sm btn-outline-secondary w-100">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i>重置筛选
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- 自习室列表 -->
+          <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">自习室列表</h5>
+              <span id="room-count" class="badge rounded-pill text-bg-primary">共 0 间</span>
+            </div>
+            <div id="room-list" class="row g-3"></div>
+            <div id="room-empty" class="alert alert-light text-muted text-center d-none" role="status">
+              <i class="bi bi-exclamation-circle me-1"></i>没有符合当前筛选条件的自习室，请调整筛选条件后重试。
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 模块三：使用统计（第一次提交为占位，第二次提交接入图表） -->
+    <!-- 模块三：使用统计（ECharts 柱状图，读取 data/data.json） -->
     <section id="stats" class="section">
       <div class="container">
         <h2 class="section-title">使用统计</h2>
-        <div class="placeholder-block">
-          <i class="bi bi-graph-up"></i>
-          <p class="mb-0">【使用统计】读取 data.json 的 ECharts 柱状图将在第二次提交接入。</p>
+
+        <!-- 汇总指标 -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-3">
+            <div class="card stat-card h-100">
+              <div class="card-body">
+                <div class="stat-label">自习室总数</div>
+                <div class="stat-value"><span id="stat-total">-</span> <small>间</small></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="card stat-card h-100">
+              <div class="card-body">
+                <div class="stat-label">本周累计使用</div>
+                <div class="stat-value"><span id="stat-usage">-</span> <small>人次</small></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="card stat-card h-100">
+              <div class="card-body">
+                <div class="stat-label">当前开放</div>
+                <div class="stat-value"><span id="stat-open">-</span> <small>间</small></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="card stat-card h-100">
+              <div class="card-body">
+                <div class="stat-label">开放率</div>
+                <div class="stat-value"><span id="stat-rate">-</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 图表卡片：标题、单位、数据来源 -->
+        <div class="card">
+          <div class="card-body">
+            <div id="usage-chart" class="chart-box" role="img" aria-label="各自习室本周使用量柱状图"></div>
+            <p class="chart-source text-muted text-center mb-0">
+              <i class="bi bi-info-circle me-1"></i>
+              数据来源：<span id="chart-source">data/data.json</span>；统计周期：<span id="chart-week">-</span>；单位：人次
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -144,11 +225,12 @@
   <!-- 库在前，自己的代码在后；版本全部锁定 -->
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
   <script src="js/app.js"></script>
   <script>
     // 断网提示：load 后若关键库未挂载，说明 CDN 被拦截或处于断网状态
     window.addEventListener('load', function () {
-      if (!window.jQuery || !window.bootstrap) {
+      if (!window.jQuery || !window.bootstrap || !window.echarts) {
         document.getElementById('cdn-fail').classList.remove('d-none');
       }
     });
