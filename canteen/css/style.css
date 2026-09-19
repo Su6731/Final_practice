@@ -1,0 +1,265 @@
+/* ==========================================================================
+   校园食堂信息系统 · 自定义样式
+   引入位置：Bootstrap CSS 之后（只做主题增强，不整体覆盖 Bootstrap）
+   ========================================================================== */
+
+:root {
+  --brand: #d35400;
+  --brand-dark: #a04000;
+  --brand-light: #fdeee3;
+  --accent: #f39c12;
+  --ok: #27ae60;
+  --warn: #f39c12;
+  --busy: #c0392b;
+  --ink: #2c3e50;
+  --bg-soft: #faf6f2;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: var(--bg-soft);
+  overflow-x: hidden; /* 自查项：375 / 768 / 1200 三档宽度下均无横向滚动条 */
+}
+
+/* --------------------------------------------------------------------------
+   断网 / CDN 失败提示条
+   -------------------------------------------------------------------------- */
+.alert-ribbon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  margin: 0;
+  border-radius: 0;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   导航
+   -------------------------------------------------------------------------- */
+.brand-nav {
+  background: linear-gradient(90deg, var(--brand-dark), var(--brand));
+  box-shadow: 0 2px 12px rgba(160, 64, 0, .25);
+}
+
+.brand-nav .nav-link {
+  color: rgba(255, 255, 255, .85);
+  font-weight: 500;
+  margin: 0 .25rem;
+  padding-left: .85rem !important;
+  padding-right: .85rem !important;
+  border-radius: .5rem;
+}
+
+.brand-nav .nav-link:hover,
+.brand-nav .nav-link.active {
+  color: #fff;
+  background: rgba(255, 255, 255, .18);
+}
+
+/* --------------------------------------------------------------------------
+   Hero 与全校区汇总条
+   -------------------------------------------------------------------------- */
+.hero {
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 60%, #e67e22 100%);
+  padding: 4rem 0;
+}
+
+.hero h1 {
+  font-weight: 700;
+}
+
+.hero .lead {
+  color: rgba(255, 255, 255, .92);
+}
+
+.campus-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  margin-top: 1.75rem;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, .14);
+  border-radius: .8rem;
+  backdrop-filter: blur(4px);
+}
+
+.campus-summary-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-num {
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.summary-label {
+  font-size: .85rem;
+  color: rgba(255, 255, 255, .85);
+}
+
+/* --------------------------------------------------------------------------
+   区块与标题
+   -------------------------------------------------------------------------- */
+.section {
+  padding: 3.5rem 0;
+  scroll-margin-top: 72px; /* sticky 导航下锚点定位不被遮挡 */
+}
+
+.section-alt {
+  background: #fff;
+}
+
+.section-title {
+  font-weight: 700;
+  color: var(--brand-dark);
+  position: relative;
+  padding-bottom: .6rem;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 48px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   食堂实时卡片
+   -------------------------------------------------------------------------- */
+.canteen-card {
+  border: 0;
+  border-radius: .9rem;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, .08);
+  transition: transform .2s ease, box-shadow .2s ease;
+  height: 100%;
+}
+
+.canteen-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(44, 62, 80, .14);
+}
+
+.canteen-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.canteen-name {
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+
+.canteen-count {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--brand-dark);
+  line-height: 1.1;
+}
+
+.canteen-count small {
+  font-size: .9rem;
+  font-weight: 400;
+  color: #8d9aa5;
+}
+
+/* 占用率状态色（JS 按阈值切换） */
+.rate-ok .progress-bar {
+  background: var(--ok);
+}
+
+.rate-warn .progress-bar {
+  background: var(--warn);
+}
+
+.rate-busy .progress-bar {
+  background: var(--busy);
+}
+
+.canteen-meta {
+  color: #6b7a88;
+  font-size: .88rem;
+  margin-top: .75rem;
+  margin-bottom: 0;
+}
+
+.canteen-meta .bi {
+  color: var(--brand);
+  margin-right: .35rem;
+}
+
+/* 拥挤度徽标 */
+.level-badge {
+  font-size: .78rem;
+  padding: .35em .7em;
+}
+
+/* --------------------------------------------------------------------------
+   占位区块（骨架阶段使用）
+   -------------------------------------------------------------------------- */
+.placeholder-block {
+  border: 2px dashed #e0cfc0;
+  border-radius: .75rem;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #b09880;
+  background: #fffdfb;
+}
+
+.placeholder-block .bi {
+  font-size: 2.2rem;
+  display: block;
+  margin-bottom: .5rem;
+}
+
+/* --------------------------------------------------------------------------
+   页脚
+   -------------------------------------------------------------------------- */
+.site-footer {
+  background: var(--brand-dark);
+  color: rgba(255, 255, 255, .78);
+  padding: 1.5rem 0;
+  margin-top: 2rem;
+}
+
+/* --------------------------------------------------------------------------
+   响应式：手机 375px 档
+   -------------------------------------------------------------------------- */
+@media (max-width: 575.98px) {
+  .hero {
+    padding: 2.75rem 0;
+  }
+
+  .hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .campus-summary {
+    gap: 1.25rem;
+    justify-content: space-between;
+  }
+
+  .summary-num {
+    font-size: 1.4rem;
+  }
+
+  .section {
+    padding: 2.5rem 0;
+  }
+}

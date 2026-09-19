@@ -1,0 +1,100 @@
+{
+  "updatedTime": "2026-09-19 11:35",
+  "source": "canteen/data/data.json（课堂演示模拟数据，非真实食堂监测系统）",
+  "canteens": [
+    {
+      "id": "pinwei",
+      "name": "品味堂",
+      "capacity": 850,
+      "current": 536,
+      "hours": "06:30 - 20:30",
+      "hourlyFlow": [
+        { "hour": "06:00", "count": 88 },
+        { "hour": "07:00", "count": 312 },
+        { "hour": "08:00", "count": 265 },
+        { "hour": "09:00", "count": 120 },
+        { "hour": "10:00", "count": 95 },
+        { "hour": "11:00", "count": 560 },
+        { "hour": "12:00", "count": 610 },
+        { "hour": "13:00", "count": 280 },
+        { "hour": "14:00", "count": 110 },
+        { "hour": "15:00", "count": 105 },
+        { "hour": "16:00", "count": 150 },
+        { "hour": "17:00", "count": 430 },
+        { "hour": "18:00", "count": 470 },
+        { "hour": "19:00", "count": 210 },
+        { "hour": "20:00", "count": 90 }
+      ],
+      "shops": [
+        { "name": "麻辣香锅", "flow": 486 },
+        { "name": "黄焖鸡米饭", "flow": 402 },
+        { "name": "自选快餐", "flow": 371 },
+        { "name": "兰州拉面", "flow": 288 },
+        { "name": "脆皮鸡饭", "flow": 235 },
+        { "name": "鲜果饮品吧", "flow": 176 }
+      ]
+    },
+    {
+      "id": "yuwei",
+      "name": "余味堂",
+      "capacity": 620,
+      "current": 418,
+      "hours": "06:30 - 20:00",
+      "hourlyFlow": [
+        { "hour": "06:00", "count": 60 },
+        { "hour": "07:00", "count": 205 },
+        { "hour": "08:00", "count": 240 },
+        { "hour": "09:00", "count": 98 },
+        { "hour": "10:00", "count": 88 },
+        { "hour": "11:00", "count": 420 },
+        { "hour": "12:00", "count": 530 },
+        { "hour": "13:00", "count": 445 },
+        { "hour": "14:00", "count": 130 },
+        { "hour": "15:00", "count": 96 },
+        { "hour": "16:00", "count": 120 },
+        { "hour": "17:00", "count": 330 },
+        { "hour": "18:00", "count": 380 },
+        { "hour": "19:00", "count": 185 },
+        { "hour": "20:00", "count": 70 }
+      ],
+      "shops": [
+        { "name": "大盘鸡拌面", "flow": 377 },
+        { "name": "铁板烧", "flow": 342 },
+        { "name": "麻辣烫", "flow": 318 },
+        { "name": "石锅拌饭", "flow": 254 },
+        { "name": "鲜果捞", "flow": 149 }
+      ]
+    },
+    {
+      "id": "zhiwei",
+      "name": "知味堂",
+      "capacity": 700,
+      "current": 302,
+      "hours": "06:30 - 21:00",
+      "hourlyFlow": [
+        { "hour": "06:00", "count": 72 },
+        { "hour": "07:00", "count": 240 },
+        { "hour": "08:00", "count": 180 },
+        { "hour": "09:00", "count": 86 },
+        { "hour": "10:00", "count": 76 },
+        { "hour": "11:00", "count": 380 },
+        { "hour": "12:00", "count": 450 },
+        { "hour": "13:00", "count": 230 },
+        { "hour": "14:00", "count": 105 },
+        { "hour": "15:00", "count": 88 },
+        { "hour": "16:00", "count": 140 },
+        { "hour": "17:00", "count": 490 },
+        { "hour": "18:00", "count": 520 },
+        { "hour": "19:00", "count": 260 },
+        { "hour": "20:00", "count": 85 }
+      ],
+      "shops": [
+        { "name": "东北水饺", "flow": 396 },
+        { "name": "烧腊饭", "flow": 351 },
+        { "name": "螺蛳粉", "flow": 309 },
+        { "name": "牛肉汤面", "flow": 227 },
+        { "name": "轻食沙拉", "flow": 158 }
+      ]
+    }
+  ]
+}
