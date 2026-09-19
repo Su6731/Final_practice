@@ -5,12 +5,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>昨日统计 · 运动场馆信息系统</title>
+  <meta name="description" content="各运动场馆昨日人流量与高峰期排行表格，配柱状图、折线图与占比图">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
+
+  <div id="cdn-fail" class="alert alert-danger alert-ribbon d-none" role="alert">
+    <i class="bi bi-wifi-off me-1"></i>CDN 资源加载失败（可能处于断网状态），图表可能不可用，请检查网络后刷新页面。
+  </div>
+
   <nav class="navbar navbar-expand-lg navbar-dark brand-nav sticky-top">
     <div class="container">
       <a class="navbar-brand fw-bold" href="index.html"><i class="bi bi-trophy-fill me-1"></i>运动场馆信息系统</a>
@@ -29,14 +36,75 @@
     </div>
   </nav>
 
-  <main class="section">
-    <div class="container">
-      <h2 class="section-title">昨日统计</h2>
-      <div class="placeholder-block">
-        <i class="bi bi-graph-up"></i>
-        <p class="mb-0">【昨日统计】人流量 / 高峰期排行表格与图表将在第二次提交接入。</p>
+  <main>
+    <!-- 排行表格 -->
+    <section class="section">
+      <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+          <h2 class="section-title mb-0">昨日人流量与高峰期排行</h2>
+          <span class="text-muted small">统计日期：<span id="stat-date">-</span></span>
+        </div>
+        <p class="text-muted small mb-3">按昨日累计人流量从高到低排序；高峰期为昨日分时段中人数最多的时段（单位：人次）。</p>
+
+        <div class="card">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 text-center">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col" style="width: 5rem;">排名</th>
+                    <th scope="col" class="text-start">场馆</th>
+                    <th scope="col">类型</th>
+                    <th scope="col">昨日总人流量（人次）</th>
+                    <th scope="col">高峰时段</th>
+                    <th scope="col">高峰人数（人）</th>
+                  </tr>
+                </thead>
+                <tbody id="rank-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div id="table-empty" class="placeholder-block d-none mt-3">
+          <i class="bi bi-inboxes"></i>
+          <p class="mb-0">暂无昨日统计数据，请检查 data/data.json。</p>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <!-- 图表区 -->
+    <section class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">数据可视化</h2>
+        <div class="row g-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <div id="bar-chart" class="chart-box" role="img" aria-label="各场馆昨日总人流量柱状图"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <div class="card h-100">
+              <div class="card-body">
+                <div id="line-chart" class="chart-box" role="img" aria-label="各场馆昨日分时段人流折线图"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="card h-100">
+              <div class="card-body">
+                <div id="pie-chart" class="chart-box" role="img" aria-label="各场馆昨日人流量占比饼图"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="chart-source text-muted text-center mb-0 mt-3">
+          <i class="bi bi-info-circle me-1"></i>
+          数据来源：<span id="stat-source">data/data.json</span>；三类图表（柱状图 / 折线图 / 饼图）均由 ECharts 5.5.1 渲染
+        </p>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -45,6 +113,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/stats.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      if (!window.jQuery || !window.bootstrap || !window.echarts || !window.SportsData) {
+        document.getElementById('cdn-fail').classList.remove('d-none');
+      }
+    });
+  </script>
 </body>
 
 </html>

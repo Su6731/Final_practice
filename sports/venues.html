@@ -5,12 +5,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>场馆查询 · 运动场馆信息系统</title>
+  <meta name="description" content="按名称搜索、按类型与拥挤状态筛选校园运动场馆">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
+
+  <div id="cdn-fail" class="alert alert-danger alert-ribbon d-none" role="alert">
+    <i class="bi bi-wifi-off me-1"></i>CDN 资源加载失败（可能处于断网状态），请检查网络后刷新页面。
+  </div>
+
   <nav class="navbar navbar-expand-lg navbar-dark brand-nav sticky-top">
     <div class="container">
       <a class="navbar-brand fw-bold" href="index.html"><i class="bi bi-trophy-fill me-1"></i>运动场馆信息系统</a>
@@ -32,9 +39,54 @@
   <main class="section">
     <div class="container">
       <h2 class="section-title">场馆查询</h2>
-      <div class="placeholder-block">
-        <i class="bi bi-funnel"></i>
-        <p class="mb-0">【场馆查询】名称搜索与类型 / 状态筛选将在第二次提交接入。</p>
+
+      <div class="row g-4">
+        <!-- 筛选条件 -->
+        <div class="col-lg-3">
+          <div class="card filter-card">
+            <div class="card-body">
+              <h6 class="filter-title"><i class="bi bi-funnel me-1"></i>查询条件</h6>
+
+              <label for="q-name" class="form-label">场馆名称</label>
+              <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input id="q-name" type="search" class="form-control" placeholder="如：篮球、游泳">
+              </div>
+
+              <label for="q-type" class="form-label">场馆类型</label>
+              <select id="q-type" class="form-select form-select-sm mb-3">
+                <option value="all" selected>全部类型</option>
+                <option value="室内">室内</option>
+                <option value="室外">室外</option>
+              </select>
+
+              <label for="q-level" class="form-label">拥挤状态</label>
+              <select id="q-level" class="form-select form-select-sm mb-3">
+                <option value="all" selected>全部状态</option>
+                <option value="ok">空闲</option>
+                <option value="warn">适中</option>
+                <option value="busy">拥挤</option>
+              </select>
+
+              <button id="q-reset" type="button" class="btn btn-sm btn-outline-secondary w-100">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>重置条件
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 查询结果 -->
+        <div class="col-lg-9">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">查询结果</h5>
+            <span id="result-count" class="badge rounded-pill text-bg-primary">共 0 个场馆</span>
+          </div>
+          <div id="venue-list" class="row g-3"></div>
+          <div id="result-empty" class="placeholder-block d-none">
+            <i class="bi bi-search-heart"></i>
+            <p class="mb-0">没有符合条件的场馆，请放宽搜索关键词或筛选条件。</p>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -45,6 +97,15 @@
 
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/venues.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      if (!window.jQuery || !window.bootstrap || !window.SportsData) {
+        document.getElementById('cdn-fail').classList.remove('d-none');
+      }
+    });
+  </script>
 </body>
 
 </html>
