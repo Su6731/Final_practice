@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校园公共信息与数据展示中心</title>
+  <meta name="description" content="校园运动场馆、食堂餐饮与自习空间一体化信息与数据展示中心：实时人数、查询筛选、数据图表与三维校园导览">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div id="cdn-fail" class="alert alert-danger alert-ribbon d-none" role="alert">
+    <i class="bi bi-wifi-off me-1"></i>CDN 资源加载失败（可能处于断网状态），样式或图表可能不可用，请检查网络后刷新页面。
+  </div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark brand-nav sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">
+        <i class="bi bi-mortarboard-fill me-1"></i>校园公共信息与数据展示中心
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+        aria-controls="navMenu" aria-expanded="false" aria-label="切换导航">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html">首页</a></li>
+          <li class="nav-item"><a class="nav-link" href="query.html">综合查询</a></li>
+          <li class="nav-item"><a class="nav-link" href="stats.html">数据中心</a></li>
+          <li class="nav-item"><a class="nav-link" href="three-d/scene.html">三维校园</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <h1 class="display-6">校园公共服务一站通</h1>
+      <p class="lead col-lg-9 mb-0">
+        汇聚<span class="fw-bold"> 六处运动场馆 · 三座食堂 · 十间自习室 </span>的实时人数与开放状态，
+        支持名称搜索与条件筛选，提供昨日人流图表分析与三维校园导览。
+      </p>
+      <div class="campus-summary">
+        <div class="campus-summary-item">
+          <span class="summary-num" id="sum-current">-</span>
+          <span class="summary-label">场馆 / 食堂当前总人数（人）</span>
+        </div>
+        <div class="campus-summary-item">
+          <span class="summary-num" id="sum-capacity">-</span>
+          <span class="summary-label">总容量（人）</span>
+        </div>
+        <div class="campus-summary-item">
+          <span class="summary-num" id="sum-rate">-</span>
+          <span class="summary-label">整体占用率</span>
+        </div>
+        <div class="campus-summary-item">
+          <span class="summary-num" id="sum-rooms">-</span>
+          <span class="summary-label">当前开放自习室（间）</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- 业态速览 -->
+    <section class="section">
+      <div class="container">
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-3">
+            <div class="mini-stat">
+              <span class="mini-icon" style="background:#0e7c86"><i class="bi bi-trophy-fill"></i></span>
+              <div>
+                <div class="mini-num" id="mini-venues">-</div>
+                <div class="mini-label">运动场馆（处）</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="mini-stat">
+              <span class="mini-icon" style="background:#f97316"><i class="bi bi-cup-hot-fill"></i></span>
+              <div>
+                <div class="mini-num" id="mini-canteens">-</div>
+                <div class="mini-label">学生食堂（座）</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="mini-stat">
+              <span class="mini-icon" style="background:#2563eb"><i class="bi bi-book"></i></span>
+              <div>
+                <div class="mini-num" id="mini-rooms">-</div>
+                <div class="mini-label">自习室总数（间）</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="mini-stat">
+              <span class="mini-icon" style="background:#16a34a"><i class="bi bi-clock-history"></i></span>
+              <div>
+                <div class="mini-num" id="mini-date" style="font-size:1rem">-</div>
+                <div class="mini-label">统计数据日期</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ul class="nav nav-pills cat-tabs" id="catTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-sports" data-bs-toggle="tab" data-bs-target="#pane-sports"
+              type="button" role="tab" aria-controls="pane-sports" aria-selected="true">
+              <i class="bi bi-trophy-fill"></i>运动场馆
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-canteen" data-bs-toggle="tab" data-bs-target="#pane-canteen"
+              type="button" role="tab" aria-controls="pane-canteen" aria-selected="false">
+              <i class="bi bi-cup-hot-fill"></i>食堂餐饮
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-room" data-bs-toggle="tab" data-bs-target="#pane-room"
+              type="button" role="tab" aria-controls="pane-room" aria-selected="false">
+              <i class="bi bi-book"></i>自习空间
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content pt-4">
+          <div class="tab-pane fade show active" id="pane-sports" role="tabpanel" aria-labelledby="tab-sports">
+            <p class="text-muted small mb-3">
+              拥挤程度：占用率 &lt; 60% 空闲 · 60%–85% 适中 · &gt; 85% 拥挤（人数为当前快照，课堂演示模拟值）
+            </p>
+            <div id="venue-list" class="row g-4"></div>
+          </div>
+          <div class="tab-pane fade" id="pane-canteen" role="tabpanel" aria-labelledby="tab-canteen">
+            <p class="text-muted small mb-3">
+              三座食堂的当前在堂人数与占用率，门店客流排行与分时段人流请见“数据中心”。
+            </p>
+            <div id="canteen-list" class="row g-4"></div>
+          </div>
+          <div class="tab-pane fade" id="pane-room" role="tabpanel" aria-labelledby="tab-room">
+            <p class="text-muted small mb-3">
+              进度条表示本周使用量相对最高自习室的比例；维护或闭馆的自习室以灰色卡片展示。
+            </p>
+            <div id="room-list" class="row g-4"></div>
+          </div>
+        </div>
+
+        <div id="data-empty" class="placeholder-block d-none mt-3">
+          <i class="bi bi-inboxes"></i>
+          <p class="mb-0">暂无数据，请检查 data/data.json 内容后刷新页面。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 快速入口 -->
+    <section class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">快速入口</h2>
+        <div class="row g-4 pt-2">
+          <div class="col-sm-6 col-lg-4">
+            <div class="card service-card">
+              <div class="card-body">
+                <h5><i class="bi bi-funnel me-1 text-primary"></i>综合查询</h5>
+                <p class="text-muted mb-3">在三类服务间切换，按名称搜索并按类型、状态、楼层即时筛选。</p>
+                <a href="query.html" class="btn btn-sm btn-outline-primary">进入查询 <i class="bi bi-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <div class="card service-card">
+              <div class="card-body">
+                <h5><i class="bi bi-bar-chart-line me-1 text-primary"></i>数据中心</h5>
+                <p class="text-muted mb-3">柱状图、折线图、饼图与条形图，分析昨日人流、门店排行与自习使用量。</p>
+                <a href="stats.html" class="btn btn-sm btn-outline-primary">查看图表 <i class="bi bi-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <div class="card service-card">
+              <div class="card-body">
+                <h5><i class="bi bi-box-seam me-1 text-primary"></i>三维校园</h5>
+                <p class="text-muted mb-3">Three.js 三维场景俯瞰校园三区，建筑状态灯颜色随实时占用率变化。</p>
+                <a href="three-d/scene.html" class="btn btn-sm btn-outline-primary">进入三维区 <i class="bi bi-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+      <span class="mb-0"><i class="bi bi-mortarboard-fill me-1"></i>校园公共信息与数据展示中心</span>
+      <span class="mb-0"><small>© <span id="year"></span> 数据为教学演示模拟值</small></span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/index.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      if (!window.jQuery || !window.bootstrap || !window.CampusData) {
+        document.getElementById('cdn-fail').classList.remove('d-none');
+      }
+    });
+  </script>
+</body>
+
+</html>

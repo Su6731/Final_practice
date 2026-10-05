@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据中心 · 校园公共信息与数据展示中心</title>
+  <meta name="description" content="运动场馆昨日人流、食堂分时客流与门店排行、自习室使用量的多类型图表分析">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div id="cdn-fail" class="alert alert-danger alert-ribbon d-none" role="alert">
+    <i class="bi bi-wifi-off me-1"></i>CDN 资源加载失败（可能处于断网状态），图表可能不可用，请检查网络后刷新页面。
+  </div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark brand-nav sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html"><i class="bi bi-mortarboard-fill me-1"></i>校园公共信息与数据展示中心</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+        aria-controls="navMenu" aria-expanded="false" aria-label="切换导航">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="index.html">首页</a></li>
+          <li class="nav-item"><a class="nav-link" href="query.html">综合查询</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="stats.html">数据中心</a></li>
+          <li class="nav-item"><a class="nav-link" href="three-d/scene.html">三维校园</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- 运动场馆统计 -->
+    <section class="section">
+      <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+          <h2 class="section-title mb-0">运动场馆 · 昨日人流</h2>
+          <span class="text-muted small">统计日期：<span id="stat-date">-</span></span>
+        </div>
+        <p class="text-muted small mb-3">按昨日累计人流量从高到低排序；高峰期为分时段中人数最多的时段（单位：人次）。</p>
+
+        <div class="card">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 text-center">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col" style="width: 5rem;">排名</th>
+                    <th scope="col" class="text-start">场馆</th>
+                    <th scope="col">类型</th>
+                    <th scope="col">昨日总人流量（人次）</th>
+                    <th scope="col">高峰时段</th>
+                    <th scope="col">高峰人数（人）</th>
+                  </tr>
+                </thead>
+                <tbody id="rank-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div id="sports-empty" class="placeholder-block d-none mt-3">
+          <i class="bi bi-inboxes"></i>
+          <p class="mb-0">暂无运动场馆统计数据，请检查 data/data.json。</p>
+        </div>
+
+        <div class="row g-4 pt-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <div id="chart-v-bar" class="chart-box" role="img" aria-label="各场馆昨日总人流量柱状图"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <div class="card h-100">
+              <div class="card-body">
+                <div id="chart-v-line" class="chart-box" role="img" aria-label="各场馆昨日分时段人流折线图"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="card h-100">
+              <div class="card-body">
+                <div id="chart-v-pie" class="chart-box" role="img" aria-label="各场馆昨日人流量占比饼图"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 食堂统计 -->
+    <section class="section section-alt">
+      <div class="container">
+        <h2 class="section-title">食堂餐饮 · 昨日客流</h2>
+        <p class="text-muted small mb-3">三食堂分时段客流量对比，以及各食堂昨日客流 Top3 门店排行。</p>
+        <div id="canteen-empty" class="placeholder-block d-none mb-3">
+          <i class="bi bi-inboxes"></i>
+          <p class="mb-0">暂无食堂统计数据，请检查 data/data.json。</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <div id="chart-c-bar" class="chart-box" role="img" aria-label="三食堂昨日分时段客流分组柱状图"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <div id="chart-c-shop" class="chart-box" role="img" aria-label="各食堂昨日客流Top3门店横向条形图"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 自习室统计 -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">自习空间 · 本周使用</h2>
+        <p class="text-muted small mb-3">统计周期：<span id="stat-week">-</span>；各自习室本周使用量与开放状态分布。</p>
+        <div id="rooms-empty" class="placeholder-block d-none mb-3">
+          <i class="bi bi-inboxes"></i>
+          <p class="mb-0">暂无自习室统计数据，请检查 data/data.json。</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-8">
+            <div class="card h-100">
+              <div class="card-body">
+                <div id="chart-r-bar" class="chart-box" role="img" aria-label="各自习室本周使用量柱状图"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <div id="chart-r-pie" class="chart-box" role="img" aria-label="自习室开放状态占比饼图"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="chart-source text-muted text-center mb-0 mt-4">
+          <i class="bi bi-info-circle me-1"></i>
+          数据来源：<span id="stat-source">data/data.json</span>；共七张图表，涵盖柱状图 / 折线图 / 饼图 / 条形图四类，均由 ECharts 5.5.1 渲染
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container"><span class="mb-0"><small>校园公共信息与数据展示中心 · 数据中心</small></span></div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/stats.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      if (!window.jQuery || !window.bootstrap || !window.echarts || !window.CampusData) {
+        document.getElementById('cdn-fail').classList.remove('d-none');
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三维校园 · 校园公共信息与数据展示中心</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="../css/style.css" rel="stylesheet">
+</head>
+
+<body class="scene-page">
+
+  <div id="cdn-fail" class="alert alert-danger alert-ribbon d-none" role="alert">
+    <i class="bi bi-wifi-off me-1"></i>CDN 三维资源加载失败（可能处于断网状态），请检查网络后刷新页面。
+  </div>
+
+  <nav class="navbar navbar-expand-lg navbar-dark brand-nav">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="../index.html"><i class="bi bi-mortarboard-fill me-1"></i>校园公共信息与数据展示中心</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+        aria-controls="navMenu" aria-expanded="false" aria-label="切换导航">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="../index.html">首页</a></li>
+          <li class="nav-item"><a class="nav-link" href="../query.html">综合查询</a></li>
+          <li class="nav-item"><a class="nav-link" href="../stats.html">数据中心</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="scene.html">三维校园</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="scene-wrap">
+    <div id="three-container"></div>
+
+    <div class="scene-hud">
+      <div class="hud-card">
+        <h6 class="mb-1"><i class="bi bi-geo-alt-fill me-1"></i>校园三维导览（西区运动 · 东南食堂 · 东北自习）</h6>
+        <p>左键旋转 · 滚轮缩放 · 右键平移 · 状态灯颜色：
+          <span class="dot dot-ok"></span>空闲 / 资源充足<span class="dot dot-warn"></span>适中<span class="dot dot-busy"></span>拥挤 / 紧张</p>
+      </div>
+      <div class="hud-actions">
+        <button id="btn-rotate" class="btn btn-light btn-sm" type="button" aria-pressed="false">
+          <i class="bi bi-arrow-repeat me-1"></i>自动环绕
+        </button>
+        <button id="btn-reset" class="btn btn-light btn-sm" type="button">
+          <i class="bi bi-camera me-1"></i>复位视角
+        </button>
+        <a class="btn btn-light btn-sm" href="../index.html"><i class="bi bi-house me-1"></i>返回首页</a>
+      </div>
+    </div>
+
+    <div id="scene-loading" class="scene-loading">
+      <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+      <span id="scene-loading-text">三维场景加载中…</span>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Three.js 0.160.0：ES Module + importmap，版本锁定 -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    /* ---------- 基础环境 ---------- */
+    const container = document.getElementById('three-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xd6ebf0);
+    scene.fog = new THREE.Fog(0xd6ebf0, 95, 185);
+
+    const camera = new THREE.PerspectiveCamera(55, container.clientWidth / container.clientHeight, 0.1, 400);
+    const HOME_POSITION = new THREE.Vector3(50, 42, 60);
+    const HOME_TARGET = new THREE.Vector3(-4, 0, -2);
+    camera.position.copy(HOME_POSITION);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    container.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.copy(HOME_TARGET);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.minDistance = 12;
+    controls.maxDistance = 140;
+    controls.maxPolarAngle = Math.PI * 0.49;
+    controls.update();
+
+    scene.add(new THREE.HemisphereLight(0xdcecff, 0x8a9a6b, 0.95));
+    const sun = new THREE.DirectionalLight(0xfff3d6, 2.1);
+    sun.position.set(30, 46, 22);
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.camera.left = -70;
+    sun.shadow.camera.right = 70;
+    sun.shadow.camera.top = 70;
+    sun.shadow.camera.bottom = -70;
+    sun.shadow.camera.far = 150;
+    scene.add(sun);
+
+    /* ---------- 地面、道路与中心广场 ---------- */
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(170, 170),
+      new THREE.MeshStandardMaterial({ color: 0x9fce7f, roughness: 1 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    const roadMat = new THREE.MeshStandardMaterial({ color: 0x9aa3ab, roughness: .95 });
+    const roadH = new THREE.Mesh(new THREE.BoxGeometry(130, .08, 3), roadMat);
+    roadH.position.y = .03;
+    const roadV = new THREE.Mesh(new THREE.BoxGeometry(3, .08, 110), roadMat);
+    roadV.position.y = .03;
+    // 通往食堂区与自习区的支路
+    const roadCanteen = new THREE.Mesh(new THREE.BoxGeometry(2.4, .07, 22), roadMat);
+    roadCanteen.position.set(24, .025, -11);
+    const roadStudy = new THREE.Mesh(new THREE.BoxGeometry(46, .07, 2.4), roadMat);
+    roadStudy.position.set(25, .025, 10);
+    scene.add(roadH, roadV, roadCanteen, roadStudy);
+
+    const plaza = new THREE.Mesh(
+      new THREE.CircleGeometry(8.5, 48),
+      new THREE.MeshStandardMaterial({ color: 0xd8d2c4, roughness: 1 })
+    );
+    plaza.rotation.x = -Math.PI / 2;
+    plaza.position.y = .06;
+    plaza.receiveShadow = true;
+    scene.add(plaza);
+
+    // 旗杆
+    const flagPole = new THREE.Mesh(
+      new THREE.CylinderGeometry(.09, .09, 6, 12),
+      new THREE.MeshStandardMaterial({ color: 0xcfd6dd, metalness: .6, roughness: .4 })
+    );
+    flagPole.position.set(0, 3, 10.5);
+    flagPole.castShadow = true;
+    const flag = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.8, 1.1),
+      new THREE.MeshStandardMaterial({ color: 0xd93633, side: THREE.DoubleSide, roughness: .8 })
+    );
+    flag.position.set(.95, 5, 10.5);
+    scene.add(flagPole, flag);
+
+    /* ---------- 占用率颜色（与首页/查询页阈值一致） ---------- */
+    const LEVEL_COLORS = { ok: 0x16a34a, warn: 0xf59e0b, busy: 0xdc2626 };
+    function levelKeyOfRate(rate) {
+      if (rate < 0.6) return 'ok';
+      if (rate <= 0.85) return 'warn';
+      return 'busy';
+    }
+    // 自习楼按开放房间比例着色：>=80% 充足，>=50% 适中，否则紧张
+    function levelKeyOfRatio(ratio) {
+      if (ratio >= 0.8) return 'ok';
+      if (ratio >= 0.5) return 'warn';
+      return 'busy';
+    }
+
+    /* ---------- 程序化立面贴图 ---------- */
+    function facadeTexture(baseColor, floors, cols) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = baseColor;
+      ctx.fillRect(0, 0, 256, 256);
+      const padX = 20, padY = 26;
+      const cellW = (256 - padX * 2) / cols;
+      const cellH = (256 - padY * 2) / floors;
+      for (let f = 0; f < floors; f++) {
+        for (let c = 0; c < cols; c++) {
+          const lit = ((f * 7 + c * 13) % 5) < 2;
+          ctx.fillStyle = lit ? 'rgba(255,236,170,.95)' : 'rgba(40,60,80,.5)';
+          ctx.fillRect(padX + c * cellW + cellW * .22, padY + f * cellH + cellH * .22,
+            cellW * .56, cellH * .52);
+        }
+      }
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      return texture;
+    }
+
+    /* ---------- 文字名牌（可重绘） ---------- */
+    function makeLabel(initialText, bgRgba) {
+      const canvas = document.createElement('canvas');
+      const fontSize = 32;
+      const ctx0 = canvas.getContext('2d');
+      ctx0.font = 'bold ' + fontSize + 'px "PingFang SC", "Microsoft YaHei", sans-serif';
+      canvas.width = Math.ceil(ctx0.measureText(initialText).width + 36);
+      canvas.height = fontSize + 20;
+
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: new THREE.CanvasTexture(canvas), transparent: true, depthWrite: false
+      }));
+      sprite.userData = {
+        canvas: canvas,
+        setText: function (text) {
+          const ctx = canvas.getContext('2d');
+          const w = canvas.width, h = canvas.height, r = 12;
+          ctx.clearRect(0, 0, w, h);
+          ctx.beginPath();
+          ctx.moveTo(r, 0);
+          ctx.arcTo(w, 0, w, h, r); ctx.arcTo(w, h, 0, h, r);
+          ctx.arcTo(0, h, 0, 0, r); ctx.arcTo(0, 0, w, 0, r);
+          ctx.closePath();
+          ctx.fillStyle = bgRgba;
+          ctx.fill();
+          ctx.font = 'bold ' + fontSize + 'px "PingFang SC", "Microsoft YaHei", sans-serif';
+          ctx.fillStyle = '#fff';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(text, w / 2, h / 2 + 1);
+          sprite.material.map.needsUpdate = true;
+        }
+      };
+      sprite.userData.setText(initialText);
+      sprite.scale.set(canvas.width / 48, canvas.height / 48, 1);
+      return sprite;
+    }
+
+    const TEAL_LABEL = 'rgba(10,86,96,.9)';
+    const ORANGE_LABEL = 'rgba(160,64,0,.9)';
+    const BLUE_LABEL = 'rgba(13,71,113,.9)';
+
+    /* ---------- 室内馆 ---------- */
+    function buildHall(cfg) {
+      const group = new THREE.Group();
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(cfg.w, cfg.h, cfg.d),
+        new THREE.MeshStandardMaterial({ map: facadeTexture(cfg.color, cfg.floors, cfg.cols), roughness: .85 })
+      );
+      body.position.y = cfg.h / 2;
+      body.castShadow = true;
+      body.receiveShadow = true;
+
+      const roof = new THREE.Mesh(
+        new THREE.BoxGeometry(cfg.w + .4, .4, cfg.d + .4),
+        new THREE.MeshStandardMaterial({ color: 0x6b7280, roughness: .9 })
+      );
+      roof.position.y = cfg.h + .2;
+      roof.castShadow = true;
+
+      const headMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: .35 });
+      const head = new THREE.Mesh(new THREE.SphereGeometry(.42, 20, 14), headMat);
+      head.position.y = cfg.h + .85;
+
+      const label = makeLabel(cfg.name, TEAL_LABEL);
+      label.position.y = cfg.h + 2.1;
+
+      group.add(body, roof, head, label);
+      group.position.set(cfg.x, 0, cfg.z);
+      scene.add(group);
+      return { headMat: headMat, label: label };
+    }
+
+    /* ---------- 室外场地 ---------- */
+    function buildCourt(cfg) {
+      const group = new THREE.Group();
+      const slab = new THREE.Mesh(
+        new THREE.BoxGeometry(cfg.w, .12, cfg.d),
+        new THREE.MeshStandardMaterial({ color: cfg.ground, roughness: 1 })
+      );
+      slab.position.y = .06;
+      slab.receiveShadow = true;
+
+      const lineMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .9 });
+      const t = .08;
+      const e1 = new THREE.Mesh(new THREE.BoxGeometry(cfg.w, .02, t), lineMat);
+      e1.position.set(0, .14, cfg.d / 2 - t);
+      const e2 = e1.clone();
+      e2.position.z = -cfg.d / 2 + t;
+      const e3 = new THREE.Mesh(new THREE.BoxGeometry(t, .02, cfg.d), lineMat);
+      e3.position.set(cfg.w / 2 - t, .14, 0);
+      const e4 = e3.clone();
+      e4.position.x = -cfg.w / 2 + t;
+      const mid = new THREE.Mesh(new THREE.BoxGeometry(cfg.w - .4, .02, t), lineMat);
+      mid.position.set(0, .14, 0);
+
+      const pole = new THREE.Mesh(
+        new THREE.CylinderGeometry(.07, .07, 2.4, 10),
+        new THREE.MeshStandardMaterial({ color: 0xcfd6dd, metalness: .5, roughness: .4 })
+      );
+      pole.position.set(cfg.w / 2 - .5, 1.2, -cfg.d / 2 + .5);
+      const headMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: .35 });
+      const head = new THREE.Mesh(new THREE.SphereGeometry(.38, 20, 14), headMat);
+      head.position.set(cfg.w / 2 - .5, 2.6, -cfg.d / 2 + .5);
+
+      const label = makeLabel(cfg.name, TEAL_LABEL);
+      label.position.set(0, 3.2, 0);
+
+      group.add(slab, e1, e2, e3, e4, mid, pole, head, label);
+      group.position.set(cfg.x, 0, cfg.z);
+      scene.add(group);
+      return { headMat: headMat, label: label };
+    }
+
+    /* ---------- 操场：环形跑道 + 中央草坪 ---------- */
+    function buildTrack(cfg) {
+      const group = new THREE.Group();
+      const field = new THREE.Mesh(
+        new THREE.BoxGeometry(7.4, .1, 13),
+        new THREE.MeshStandardMaterial({ color: 0x4c9a43, roughness: 1 })
+      );
+      field.position.y = .06;
+      field.receiveShadow = true;
+
+      const trackRing = new THREE.Mesh(
+        new THREE.TorusGeometry(7, 1.1, 12, 64),
+        new THREE.MeshStandardMaterial({ color: 0xc9623a, roughness: .95 })
+      );
+      trackRing.rotation.x = Math.PI / 2;
+      trackRing.scale.set(1, 1.75, 1);
+      trackRing.position.y = .12;
+      trackRing.receiveShadow = true;
+
+      const pole = new THREE.Mesh(
+        new THREE.CylinderGeometry(.08, .08, 2.6, 10),
+        new THREE.MeshStandardMaterial({ color: 0xcfd6dd, metalness: .5, roughness: .4 })
+      );
+      pole.position.set(8.5, 1.3, 0);
+      const headMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: .35 });
+      const head = new THREE.Mesh(new THREE.SphereGeometry(.45, 20, 14), headMat);
+      head.position.set(8.5, 1.4, 0);
+
+      const label = makeLabel(cfg.name, TEAL_LABEL);
+      label.position.set(0, 4, 0);
+
+      group.add(field, trackRing, pole, head, label);
+      group.position.set(cfg.x, 0, cfg.z);
+      scene.add(group);
+      return { headMat: headMat, label: label };
+    }
+
+    /* ---------- 食堂楼 ---------- */
+    function buildCanteen(cfg) {
+      const group = new THREE.Group();
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(cfg.w, cfg.h, cfg.d),
+        new THREE.MeshStandardMaterial({ map: facadeTexture('#d8cfc4', cfg.floors, cfg.cols), roughness: .85 })
+      );
+      body.position.y = cfg.h / 2;
+      body.castShadow = true;
+      body.receiveShadow = true;
+
+      const roof = new THREE.Mesh(
+        new THREE.BoxGeometry(cfg.w + .4, .45, cfg.d + .4),
+        new THREE.MeshStandardMaterial({ color: 0x6b7280, roughness: .9 })
+      );
+      roof.position.y = cfg.h + .22;
+      roof.castShadow = true;
+
+      const headMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: .4 });
+      const head = new THREE.Mesh(new THREE.SphereGeometry(.45, 24, 16), headMat);
+      head.position.y = cfg.h + .75;
+
+      const label = makeLabel(cfg.name, ORANGE_LABEL);
+      label.position.y = cfg.h + 2.1;
+
+      group.add(body, roof, head, label);
+      group.position.set(cfg.x, 0, cfg.z);
+      scene.add(group);
+      return { headMat: headMat, label: label };
+    }
+
+    /* ---------- 自习楼 ---------- */
+    function buildStudy(cfg) {
+      const group = new THREE.Group();
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(cfg.w, cfg.h, cfg.d),
+        new THREE.MeshStandardMaterial({ map: facadeTexture(cfg.color, cfg.floors, cfg.cols), roughness: .85 })
+      );
+      body.position.y = cfg.h / 2;
+      body.castShadow = true;
+      body.receiveShadow = true;
+
+      const roof = new THREE.Mesh(
+        new THREE.BoxGeometry(cfg.w + .5, .5, cfg.d + .5),
+        new THREE.MeshStandardMaterial({ color: 0x6b7280, roughness: .9 })
+      );
+      roof.position.y = cfg.h + .25;
+      roof.castShadow = true;
+
+      const headMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: .4 });
+      const head = new THREE.Mesh(new THREE.SphereGeometry(.5, 24, 16), headMat);
+      head.position.y = cfg.h + .9;
+
+      const label = makeLabel(cfg.name, BLUE_LABEL);
+      label.position.y = cfg.h + 2.3;
+
+      group.add(body, roof, head, label);
+      group.position.set(cfg.x, 0, cfg.z);
+      scene.add(group);
+      return { headMat: headMat, label: label };
+    }
+
+    /* ---------- 活动小人（数量随占用率 / 开放比例） ---------- */
+    const personBodyGeo = new THREE.CylinderGeometry(.15, .19, .66, 8);
+    const personHeadGeo = new THREE.SphereGeometry(.17, 12, 8);
+    const personMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 1 });
+
+    function pseudo(i) {
+      const x = Math.sin(i * 12.9898) * 43758.5453;
+      return x - Math.floor(x);
+    }
+
+    function makePerson(i) {
+      const p = new THREE.Group();
+      const body = new THREE.Mesh(personBodyGeo, personMat);
+      body.position.y = .33;
+      const head = new THREE.Mesh(personHeadGeo, personMat);
+      head.position.y = .78;
+      p.add(body, head);
+      p.rotation.y = pseudo(i + 31) * Math.PI * 2;
+      return p;
+    }
+
+    // 散布人群（运动场地 / 楼前广场）
+    function scatterPeople(count, spreadX, spreadZ) {
+      const g = new THREE.Group();
+      for (let i = 0; i < count; i++) {
+        const p = makePerson(i);
+        p.position.set((pseudo(i) - .5) * 2 * spreadX, .14, (pseudo(i + 99) - .5) * 2 * spreadZ);
+        g.add(p);
+      }
+      return g;
+    }
+
+    // 两列排队人群（食堂门前）
+    function queuePeople(count) {
+      const g = new THREE.Group();
+      for (let i = 0; i < count; i++) {
+        const p = makePerson(i + 7);
+        p.position.set((i % 2 === 0 ? -.45 : .45) + Math.sin(i) * .08, .14, Math.floor(i / 2) * .9);
+        g.add(p);
+      }
+      return g;
+    }
+
+    /* ---------- 场景布局注册 ---------- */
+    const sites = {};
+    function register(key, view, x, z, people) {
+      sites[key] = { headMat: view.headMat, label: view.label, people: people || null };
+      if (people) {
+        people.position.set(x, 0, z);
+        scene.add(people);
+      }
+    }
+
+    // 西区：运动区
+    register('track',
+      buildTrack({ name: '操场', x: -33, z: -20 }),
+      -33, -20, scatterPeople(6, 5, 9));
+
+    register('tennis',
+      buildCourt({ name: '网球场', x: -49, z: -8, w: 7, d: 9, ground: 0x2e6c91 }),
+      -49, -8, scatterPeople(3, 2.6, 3.4));
+
+    register('basketball',
+      buildHall({ name: '篮球馆', x: -49, z: 6, w: 8, h: 5.5, d: 7, floors: 2, cols: 5, color: '#c98a4b' }),
+      -49, 6, scatterPeople(4, 3.2, 1.4));
+
+    register('badminton',
+      buildHall({ name: '羽毛球馆', x: -49, z: 19, w: 8, h: 5, d: 7, floors: 2, cols: 5, color: '#5b8db8' }),
+      -49, 19, scatterPeople(4, 3.2, 1.4));
+
+    register('swimming',
+      buildHall({ name: '游泳馆', x: -19, z: 8, w: 9, h: 4.5, d: 7, floors: 1, cols: 5, color: '#3f9bc4' }),
+      -19, 8, scatterPeople(4, 3.6, 1.4));
+
+    register('volleyball',
+      buildCourt({ name: '排球场', x: -19, z: 21, w: 6, d: 8, ground: 0x3b7a4e }),
+      -19, 21, scatterPeople(3, 2.2, 3));
+
+    // 东南区：三座食堂（门前排队人群放在楼南侧）
+    const canteenCfg = [
+      { key: 'pinwei', name: '品味堂', x: 16, z: -12, w: 9, h: 6.5, d: 7, floors: 3, cols: 5 },
+      { key: 'zhiwei', name: '知味堂', x: 32, z: -12, w: 9, h: 6, d: 7, floors: 3, cols: 5 },
+      { key: 'yuwei',  name: '余味堂', x: 24, z: -27, w: 9, h: 5.5, d: 7, floors: 2, cols: 5 }
+    ];
+    canteenCfg.forEach(function (c) {
+      const view = buildCanteen(c);
+      const people = queuePeople(4);
+      people.position.set(c.x, 0, c.z - c.d / 2 - 1.2);
+      scene.add(people);
+      sites[c.key] = { headMat: view.headMat, label: view.label, people: people, mode: 'queue' };
+    });
+
+    // 东北区：图书馆与自习中心
+    const libView = buildStudy({ name: '图书馆', x: 18, z: 18, w: 12, h: 10, d: 9, floors: 5, cols: 6, color: '#7fa8c9' });
+    const libPeople = scatterPeople(3, 5, 1.4);
+    libPeople.position.set(18, 0, 18 + 9 / 2 + 1.4);
+    scene.add(libPeople);
+    sites['library'] = { headMat: libView.headMat, label: libView.label, people: libPeople };
+
+    const studyView = buildStudy({ name: '自习中心', x: 38, z: 19, w: 10, h: 7, d: 8, floors: 3, cols: 5, color: '#6c8ebf' });
+    const studyPeople = scatterPeople(3, 4, 1.3);
+    studyPeople.position.set(38, 0, 19 + 8 / 2 + 1.4);
+    scene.add(studyPeople);
+    sites['study-center'] = { headMat: studyView.headMat, label: studyView.label, people: studyPeople };
+
+    /* ---------- 绿化树木 ---------- */
+    const trunkGeo = new THREE.CylinderGeometry(.16, .22, 1.3, 8);
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x8a5a33, roughness: 1 });
+    const canopyGeo = new THREE.IcosahedronGeometry(1.2, 0);
+    const canopyMat = new THREE.MeshStandardMaterial({ color: 0x4f8a3d, roughness: 1, flatShading: true });
+
+    const treeSpots = [
+      [-9, -6], [-9, 6], [9, -6], [9, 6], [-2, -11], [2, 11],
+      [-60, -30], [-60, 30], [60, -38], [60, 30], [8, -20], [42, -20],
+      [8, 28], [48, 8], [-8, 28], [-40, 32], [10, 4], [36, 4]
+    ];
+    treeSpots.forEach(function (spot, i) {
+      const tree = new THREE.Group();
+      const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+      trunk.position.y = .65;
+      trunk.castShadow = true;
+      const canopy = new THREE.Mesh(canopyGeo, canopyMat);
+      canopy.position.y = 1.9;
+      canopy.castShadow = true;
+      tree.add(trunk, canopy);
+      tree.position.set(spot[0], 0, spot[1]);
+      tree.rotation.y = i * .7;
+      scene.add(tree);
+    });
+
+    /* ---------- 人群数量更新 ---------- */
+    function occupancyPeopleCount(current, capacity, factor, min, max) {
+      const rate = capacity ? current / capacity : 0;
+      return Math.max(min, Math.min(max, Math.round(rate * factor)));
+    }
+
+    /* ---------- 数据加载（file:// 回退内置数据） ---------- */
+    const FALLBACK = {
+      venues: [
+        { id: 'track', capacity: 500, current: 210 },
+        { id: 'tennis', capacity: 80, current: 30 },
+        { id: 'basketball', capacity: 200, current: 156 },
+        { id: 'badminton', capacity: 120, current: 98 },
+        { id: 'swimming', capacity: 260, current: 140 },
+        { id: 'volleyball', capacity: 100, current: 45 }
+      ],
+      canteens: [
+        { id: 'pinwei', capacity: 850, current: 536 },
+        { id: 'zhiwei', capacity: 700, current: 302 },
+        { id: 'yuwei', capacity: 620, current: 418 }
+      ],
+      rooms: [
+        { name: '图书馆一层自习室', status: 'open' },
+        { name: '图书馆二层静音舱', status: 'open' },
+        { name: '博学楼101自习室', status: 'open' },
+        { name: '博学楼203自习室', status: 'open' },
+        { name: '慎思楼210自习室', status: 'closed' },
+        { name: '慎思楼305自习室', status: 'open' },
+        { name: '格物楼312自习室', status: 'open' },
+        { name: '格物楼401自习室', status: 'open' },
+        { name: '致远楼408考研自习室', status: 'open' },
+        { name: '致知楼105自习室', status: 'closed' }
+      ]
+    };
+
+    // 记录每个注册点的人群基准位置，便于重建
+    Object.keys(sites).forEach(function (key) {
+      if (sites[key].people) {
+        sites[key].peoplePos = { x: sites[key].people.position.x, z: sites[key].people.position.z };
+      }
+    });
+
+    function applyOccupancy(key, name, current, capacity) {
+      const site = sites[key];
+      if (!site) return;
+      const levelKey = levelKeyOfRate(capacity ? current / capacity : 0);
+      site.headMat.color.setHex(LEVEL_COLORS[levelKey]);
+      site.label.userData.setText(name + '  ' + current + '人');
+
+      // 人群随拥挤度增减
+      if (site.people) {
+        const count = occupancyPeopleCount(current, capacity,
+          key === 'track' ? 14 : 12, site.mode === 'queue' ? 2 : 1, site.mode === 'queue' ? 12 : 10);
+        scene.remove(site.people);
+        if (site.mode === 'queue') {
+          site.people = queuePeople(count);
+        } else if (key === 'track') {
+          site.people = scatterPeople(count, 5, 9);
+        } else if (key === 'volleyball' || key === 'tennis') {
+          site.people = scatterPeople(count, key === 'tennis' ? 2.6 : 2.2, key === 'tennis' ? 3.4 : 3);
+        } else {
+          site.people = scatterPeople(count, 3.4, 1.4);
+        }
+        site.people.position.set(site.peoplePos.x, 0, site.peoplePos.z);
+        scene.add(site.people);
+      }
+    }
+
+    function applyStudy(key, name, rooms) {
+      const site = sites[key];
+      if (!site || !rooms.length) return;
+      const openCount = rooms.filter(function (r) { return r.status === 'open'; }).length;
+      const ratio = openCount / rooms.length;
+      const levelKey = levelKeyOfRatio(ratio);
+      site.headMat.color.setHex(LEVEL_COLORS[levelKey]);
+      site.label.userData.setText(name + '  开放' + openCount + '/' + rooms.length);
+
+      if (site.people) {
+        const count = Math.max(1, Math.min(8, Math.round(ratio * 8)));
+        scene.remove(site.people);
+        site.people = scatterPeople(count, key === 'library' ? 5 : 4, 1.4);
+        site.people.position.set(site.peoplePos.x, 0, site.peoplePos.z);
+        scene.add(site.people);
+      }
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch('../data/data.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return await res.json();
+      } catch (err) {
+        console.warn('[三维校园] data.json 读取失败，改用内置示例数据：', err.message);
+        return FALLBACK;
+      }
+    }
+
+    loadData().then(function (payload) {
+      const venues = payload.venues || [];
+      const canteens = payload.canteens || [];
+      const rooms = payload.rooms || [];
+
+      if (!venues.length && !canteens.length && !rooms.length) {
+        document.getElementById('scene-loading-text').textContent = '暂无校园数据（data.json 为空）';
+        window.setTimeout(function () {
+          document.getElementById('scene-loading').classList.add('d-none');
+        }, 1500);
+        window.__threeReady = true;
+        return;
+      }
+
+      venues.forEach(function (v) {
+        applyOccupancy(v.id, v.name || v.id, Number(v.current) || 0, Math.max(1, Number(v.capacity) || 1));
+      });
+      canteens.forEach(function (c) {
+        applyOccupancy(c.id, c.name || c.id, Number(c.current) || 0, Math.max(1, Number(c.capacity) || 1));
+      });
+
+      const libRooms = rooms.filter(function (r) { return String(r.name).indexOf('图书馆') !== -1; });
+      const otherRooms = rooms.filter(function (r) { return String(r.name).indexOf('图书馆') === -1; });
+      if (libRooms.length) applyStudy('library', '图书馆', libRooms);
+      if (otherRooms.length) applyStudy('study-center', '自习中心', otherRooms);
+
+      window.__threeReady = true;
+    });
+
+    /* ---------- 交互按钮 ---------- */
+    const rotateBtn = document.getElementById('btn-rotate');
+    rotateBtn.addEventListener('click', function () {
+      controls.autoRotate = !controls.autoRotate;
+      rotateBtn.classList.toggle('active', controls.autoRotate);
+      rotateBtn.setAttribute('aria-pressed', String(controls.autoRotate));
+    });
+    document.getElementById('btn-reset').addEventListener('click', function () {
+      controls.autoRotate = false;
+      rotateBtn.classList.remove('active');
+      rotateBtn.setAttribute('aria-pressed', 'false');
+      camera.position.copy(HOME_POSITION);
+      controls.target.copy(HOME_TARGET);
+      controls.update();
+    });
+
+    new ResizeObserver(function () {
+      const w = container.clientWidth, h = container.clientHeight;
+      if (!w || !h) return;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }).observe(container);
+
+    let firstFrame = true;
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+      if (firstFrame) {
+        firstFrame = false;
+        document.getElementById('scene-loading').classList.add('d-none');
+        window.__threeReady = true;
+      }
+    }
+    animate();
+  </script>
+
+  <script>
+    (function () {
+      var banner = document.getElementById('cdn-fail');
+      var loadingText = document.getElementById('scene-loading-text');
+      function showFail() {
+        banner.classList.remove('d-none');
+        if (loadingText) loadingText.textContent = '三维资源加载失败，请检查网络后刷新页面。';
+      }
+      window.addEventListener('error', function (event) {
+        var t = event.target;
+        if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK')) showFail();
+      }, true);
+      setTimeout(function () {
+        if (!window.__threeReady) showFail();
+      }, 8000);
+    })();
+  </script>
+</body>
+
+</html>
